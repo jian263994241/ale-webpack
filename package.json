@@ -1,0 +1,46 @@
+{
+  "name": "ale-webpack",
+  "version": "1.0.0",
+  "bin": {
+    "ale": "bin/ale"
+  },
+  "description": "Packs modules for browser",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "jianli",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "^7.3.3",
+    "@babel/polyfill": "^7.2.5",
+    "@babel/runtime": "^7.1.5",
+    "babel-loader": "^8.0.5",
+    "babel-preset": "^1.0.3",
+    "babelify": "^10.0.0",
+    "chokidar": "2.0.4",
+    "colors": "^1.3.3",
+    "commander": "2.19.0",
+    "css-loader": "^2.1.0",
+    "html-webpack-plugin": "^3.2.0",
+    "liftoff": "^2.3.0",
+    "lodash": "^4.17.11",
+    "progress-bar-webpack-plugin": "^1.12.1",
+    "style-loader": "^0.23.1",
+    "tar": "3.1.5",
+    "webpack": "^4.29.5",
+    "webpack-manifest-plugin": "^2.0.4"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jian263994241/es-pack.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jian263994241/es-pack/issues"
+  },
+  "homepage": "https://github.com/jian263994241/es-pack#readme"
+}
