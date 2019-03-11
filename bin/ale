@@ -17,12 +17,12 @@ program
   .command('build [configfile]')
   .description('编译文件, 默认配置: espack.config.js')
   .action((configfile, options)=>{
-    // 
+    //
     // if(program.clean){
     //   fis.cache.clean();
     // }
 
-    configfile = configfile || 'espack.config.js';
+    configfile = configfile || 'ale.config.js';
 
     configfile = path.join(cwd, configfile);
 
