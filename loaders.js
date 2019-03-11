@@ -53,6 +53,32 @@ module.exports = function(options){
       ]
     },
     {
+      test: /\.(lessm|cssm)$/,
+      use: [
+        {
+          loader: require.resolve('style-loader')
+        },
+        {
+          loader: require.resolve('css-loader'),
+          options: {
+            modules: true,
+            sourceMap: true
+          }
+        },
+        {
+          loader: require.resolve('less-loader'),
+          options: {
+            sourceMap: {
+              outputSourceFiles: true,
+              sourceMapFileInline: true,
+            },
+            javascriptEnabled: true,
+            plugins: [ npmImport, lessPluginGlob, autoprefixer ]
+          }
+        }
+      ]
+    },
+    {
       test: /\.(gif|png|jpe?g|svg)$/i,
       use: [
         require.resolve('file-loader'),
