@@ -59,11 +59,7 @@ module.exports = function(options){
           loader: require.resolve('style-loader')
         },
         {
-          loader: require.resolve('css-loader'),
-          options: {
-            modules: true,
-            sourceMap: true
-          }
+          loader: require.resolve('css-loader')
         },
         {
           loader: require.resolve('less-loader'),
