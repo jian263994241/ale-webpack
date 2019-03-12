@@ -45,12 +45,13 @@ const aleWebpack = module.exports = (options, callback) => {
 		compiler.hooks.environment.call();
 		compiler.hooks.afterEnvironment.call();
 		compiler.options = new WebpackOptionsApply().process(options, compiler);
-    if(options.devServer){
+
+    if(options.devServer.contentBase){
       new HotModuleReplacementPlugin().apply(compiler);
       WebpackDevServer.addDevServerEntrypoints(options, options.devServer);
       compiler.run = ()=>{
         let server = new WebpackDevServer(compiler, Object.assign(options.devServer, {stats: { colors: true }}));
-        server.listen(9000, '127.0.0.1', () => {
+        server.listen(options.devServer.port, '127.0.0.1', () => {
           // console.log('Starting server on http://localhost:8080');
         });
       }
@@ -73,10 +74,6 @@ const aleWebpack = module.exports = (options, callback) => {
 		}
 		compiler.run(callback);
 	}
-
-
-
-
 
 	return compiler;
 }
