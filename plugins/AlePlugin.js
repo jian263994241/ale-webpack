@@ -18,8 +18,7 @@ module.exports = class AlePlugin {
         Object.assign(
             {
               inject: true,
-              appMountId: 'root',
-              template: path.join(__dirname, '../templates/app.html')
+              template: path.join(__dirname, '../templates/app.ejs')
             },
             isEnvProduction
             ? {

@@ -2,14 +2,19 @@ const path = require('path');
 const preset = require('babel-preset');
 
 const LessPluginNpmImportPlugin = require('less-plugin-npm-import');
-const LessPluginAutoPrefix = require('less-plugin-autoprefix');
 const lessPluginGlob = require('less-plugin-glob');
-const autoprefixer = new LessPluginAutoPrefix({browsers: ["last 2 versions"]});
+// const autoprefixer = new LessPluginAutoPrefix({browsers: ["last 2 versions"]});
 const npmImport = new LessPluginNpmImportPlugin({ prefix: '~' });
 
 module.exports = function(options){
 
   const list = [
+    {
+      test: /\.ext$/,
+      use: {
+        loader: require.resolve('cache-loader'),
+      }
+    },
     {
       test: /\.(js|jsx|es)$/,
       exclude: /(node_modules|bower_components)/,
@@ -33,21 +38,27 @@ module.exports = function(options){
     {
       test: /\.(less|css)$/,
       use: [
+        { loader: require.resolve('style-loader') },
         {
-          loader: require.resolve('style-loader')
+          loader: require.resolve('css-loader'),
+          options: { sourceMap: true }
         },
         {
-          loader: require.resolve('css-loader')
+          loader: require.resolve('postcss-loader'),
+          options: {
+            ident: 'postcss',
+            sourceMap: true,
+            plugins: [
+              require('autoprefixer')({browsers: ["last 2 versions"]})
+            ]
+          }
         },
         {
           loader: require.resolve('less-loader'),
           options: {
-            sourceMap: {
-              outputSourceFiles: true,
-              sourceMapFileInline: true,
-            },
+            sourceMap: true,
             javascriptEnabled: true,
-            plugins: [ npmImport, lessPluginGlob, autoprefixer ]
+            plugins: [ npmImport, lessPluginGlob ]
           }
         }
       ]
@@ -59,17 +70,25 @@ module.exports = function(options){
           loader: require.resolve('style-loader')
         },
         {
-          loader: require.resolve('css-loader')
+          loader: require.resolve('css-loader'),
+          options: { sourceMap: true, modules: true }
+        },
+        {
+          loader: require.resolve('postcss-loader'),
+          options: {
+            ident: 'postcss',
+            sourceMap: true,
+            plugins: [
+              require('autoprefixer')({browsers: ["last 2 versions"]})
+            ]
+          }
         },
         {
           loader: require.resolve('less-loader'),
           options: {
-            sourceMap: {
-              outputSourceFiles: true,
-              sourceMapFileInline: true,
-            },
+            sourceMap: true,
             javascriptEnabled: true,
-            plugins: [ npmImport, lessPluginGlob, autoprefixer ]
+            plugins: [ npmImport, lessPluginGlob ]
           }
         }
       ]
