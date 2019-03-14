@@ -11,9 +11,6 @@ module.exports = class AlePlugin {
 
     compiler.hooks.afterEnvironment.tap('AlePlugin', ()=>{
 
-      new ProgressBarPlugin({ clear: true }).apply(compiler);
-      new ManifestPlugin().apply(compiler);
-
       new HtmlWebpackPlugin(
         Object.assign(
             {
@@ -39,6 +36,9 @@ module.exports = class AlePlugin {
             options.ale.html
         )
       ).apply(compiler);
+
+      new ProgressBarPlugin({ clear: true }).apply(compiler);
+      new ManifestPlugin().apply(compiler);
     })
   }
 }

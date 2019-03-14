@@ -16,11 +16,9 @@ const {
 const webpackOptionsSchema = require('webpack/schemas/WebpackOptions.json');
 const optionsSchema = _.defaultsDeep(webpackOptionsSchema, require('./schemas/AleWebpackOptions'));
 
-const aleWebpack = module.exports = (options, callback) => {
-  const webpackOptionsValidationErrors = validateSchema(
-		optionsSchema,
-		options
-	);
+const aleWebpack = module.exports = (_options, callback) => {
+  let { addDevServerEntrypoints, ...options } = _options;
+  const webpackOptionsValidationErrors = validateSchema( optionsSchema, options );
 	if (webpackOptionsValidationErrors.length) {
 		throw new WebpackOptionsValidationError(webpackOptionsValidationErrors);
 	}
@@ -29,8 +27,9 @@ const aleWebpack = module.exports = (options, callback) => {
 		compiler = new MultiCompiler(options.map(options => aleWebpack(options)));
 	} else if (typeof options === "object") {
 		options = new AleOptionsDefaulter().process(options);
-    WebpackDevServer.addDevServerEntrypoints(options, options.devServer);
-
+    if(addDevServerEntrypoints){
+      WebpackDevServer.addDevServerEntrypoints(options, options.devServer);
+    }
 		compiler = new Compiler(options.context);
 		compiler.options = options;
 		new NodeEnvironmentPlugin().apply(compiler);
@@ -47,11 +46,6 @@ const aleWebpack = module.exports = (options, callback) => {
 		compiler.hooks.environment.call();
 		compiler.hooks.afterEnvironment.call();
 		compiler.options = new WebpackOptionsApply().process(options, compiler);
-
-    let server = new WebpackDevServer(compiler, options.devServer);
-    server.listen(options.devServer.port, 'localhost', () => {
-      // console.log('Starting server on http://localhost:8080');
-    });
 
 	} else {
 		throw new Error("Invalid argument: options");

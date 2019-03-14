@@ -10,8 +10,16 @@ const cwd = process.cwd();
 
 program.version(version);
 
+const dev = require('../lib/cli/dev');
+
 program
   .option('-c, --clean', 'delete cache folder')
+
+program
+  .command('dev [media]')
+  .description('编译文件, 默认配置: espack.config.js')
+  .option('-f, --file <filename>', 'specify the file path of `espack.config.js`')
+  .action(dev)
 
 program
   .command('build [configfile]')
