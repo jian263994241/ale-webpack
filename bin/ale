@@ -1,98 +1,52 @@
 #!/usr/bin/env node
 const { version } = require('../package.json');
 const program = require('commander');
-const chokidar = require('chokidar');
-const path = require('path');
-const fs = require('fs');
-const espack = require('../index');
+const dev = require('../lib/cli/dev');
+const build = require('../lib/cli/build');
 
 const cwd = process.cwd();
 
 program.version(version);
-
-const dev = require('../lib/cli/dev');
-const build = require('../lib/cli/build');
 
 program
   .option('-c, --clean', 'delete cache folder')
 
 program
   .command('dev [media]')
-  .description('编译文件, 默认配置: espack.config.js')
-  .option('-f, --file <filename>', 'specify the file path of `espack.config.js`')
+  .description('编译文件, 默认配置: ale.config.js')
+  .option('-f, --file <filename>', 'specify the file path of `ale.config.js`')
   .action(dev)
 
 program
   .command('build [media]')
-  .description('编译文件, 默认配置: espack.config.js')
-  .option('-f, --file <filename>', 'specify the file path of `espack.config.js`')
+  .description('编译文件, 默认配置: ale.config.js')
+  .option('-f, --file <filename>', 'specify the file path of `ale.config.js`')
   .action(build);
 
-  program
-    .command('init [name]')
-    .description('生成预配置文件: espack.config.js')
-    .action((name, options)=>{
-      name = name ? `espack.config.${name}.js` : 'espack.config.js';
-      let configFile = path.join(cwd, name);
+program
+  .command('init [name]')
+  .description('生成预配置文件: ale.config.js')
+  .action((name, options)=>{
+    // name = name ? `ale.config.${name}.js` : 'ale.config.js';
+    // let configFile = path.join(cwd, name);
+    //
+    // if(_.exists(configFile)){
+    //   fis.log.warn(`${name} is existed.`)
+    //   return null;
+    // }
 
-      if(_.exists(configFile)){
-        fis.log.warn(`${name} is existed.`)
-        return null;
-      }
+    // let data = _.read(path.join(__dirname, '../config.example.js'));
+    //
+    // _.write(configFile, data, 'utf8');
+  });
 
-      // let data = _.read(path.join(__dirname, '../config.example.js'));
-      //
-      // _.write(configFile, data, 'utf8');
-
-    });
-
-
-// program
-//   .command('install [repo]')
-//   .alias('i')
-//   .description('install')
-//   .action((repo)=>{
-//     console.log(2, repo);
-//   });
+program
+  .command('install [repo]')
+  .alias('i')
+  .description('install')
+  .action((repo, options)=>{
+    console.log(2, repo);
+  });
 
 
 program.parse(process.argv);
-
-
-
-
-/**
- * getRequireDeps - 获取依赖
- *
- * @param  {type} filename description
- * @return {type}          description
- */
-function getRequireDeps (filename, incldueSelf) {
-  var result = [];
-  if(incldueSelf){
-    var cache = require.cache[filename];
-    result.push(cache.filename);
-  }
-  getchildren(filename);
-
-  return result;
-
-  function getchildren (filename){
-   var cache = require.cache[filename];
-   cache.children.forEach(function(dep1){
-     result.push(dep1.filename);
-     return getchildren(dep1.filename);
-   })
- }
-}
-
-
-/**
- * 删除缓存
- */
-
- function delRequireCache (files) {
-   files.forEach(function(file){
-     delete require.cache[file];
-   })
- }
