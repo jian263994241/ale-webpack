@@ -15,6 +15,7 @@ program
   .command('dev [media]')
   .description('编译文件, 默认配置: ale.config.js')
   .option('-f, --file <filename>', 'specify the file path of `ale.config.js`')
+  .option('-p, --print', 'print info')
   .action(dev)
 
 program
