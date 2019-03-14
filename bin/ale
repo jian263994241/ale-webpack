@@ -11,6 +11,7 @@ const cwd = process.cwd();
 program.version(version);
 
 const dev = require('../lib/cli/dev');
+const build = require('../lib/cli/build');
 
 program
   .option('-c, --clean', 'delete cache folder')
@@ -22,79 +23,10 @@ program
   .action(dev)
 
 program
-  .command('build [configfile]')
+  .command('build [media]')
   .description('编译文件, 默认配置: espack.config.js')
-  .action((configfile, options)=>{
-    //
-    // if(program.clean){
-    //   fis.cache.clean();
-    // }
-
-    configfile = configfile || 'ale.config.js';
-
-    configfile = path.join(cwd, configfile);
-
-    let isExist = fs.existsSync(configfile);
-
-    if(!fs.existsSync(configfile)){
-      return log.error('can not find config file.');
-    }
-
-    let confObj = require(configfile);
-    // let deps = getRequireDeps(configfile, true);
-
-    let compiler = espack(confObj);
-
-    // compiler.run((err, stats)=>{
-    //   if (err) {
-    //     console.error(err.stack || err);
-    //     if (err.details) {
-    //       console.error(err.details);
-    //     }
-    //     return;
-    //   }
-    //
-    //   var info = stats.toString({
-    //     chunks: false,  // Makes the build much quieter
-    //     colors: true    // Shows colors in the console
-    //   });
-    //
-    //   if (stats.hasErrors()) {
-    //     console.error(info);
-    //   }
-    //
-    // });
-
-    // if(confObj.watch){
-    //   let watcher = chokidar.watch(deps, {
-    //     ignored: /node_modules/,
-    //     persistent: true
-    //   });
-    //
-    //   watcher.on('change', restart);
-    //
-    //   function restart (){
-    //     delRequireCache(deps);
-    //     watcher.unwatch(deps);
-    //     b.destroy();
-    //
-    //     try {
-    //       confObj = require(configfile);
-    //       deps = getRequireDeps(configfile, true);
-    //       b = espack(confObj);
-    //       b.compile();
-    //       watcher.add(deps);
-    //       fis.log.info('Config file have changed.');
-    //     }catch(e){
-    //       fis.log.error(e.stack);
-    //       watcher.add(deps);
-    //     }
-    //
-    //   }
-    // }
-
-
-  });
+  .option('-f, --file <filename>', 'specify the file path of `espack.config.js`')
+  .action(build);
 
   program
     .command('init [name]')
