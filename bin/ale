@@ -3,6 +3,7 @@ const { version } = require('../package.json');
 const program = require('commander');
 const dev = require('../lib/cli/dev');
 const build = require('../lib/cli/build');
+const init = require('../lib/cli/init');
 
 const cwd = process.cwd();
 
@@ -25,29 +26,9 @@ program
   .action(build);
 
 program
-  .command('init [name]')
+  .command('init [repo]')
   .description('生成预配置文件: ale.config.js')
-  .action((name, options)=>{
-    // name = name ? `ale.config.${name}.js` : 'ale.config.js';
-    // let configFile = path.join(cwd, name);
-    //
-    // if(_.exists(configFile)){
-    //   fis.log.warn(`${name} is existed.`)
-    //   return null;
-    // }
-
-    // let data = _.read(path.join(__dirname, '../config.example.js'));
-    //
-    // _.write(configFile, data, 'utf8');
-  });
-
-program
-  .command('install [repo]')
-  .alias('i')
-  .description('install')
-  .action((repo, options)=>{
-    console.log(2, repo);
-  });
+  .action(init);
 
 
 program.parse(process.argv);
