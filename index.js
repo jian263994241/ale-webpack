@@ -1,5 +1,5 @@
 const AleOptionsDefaulter = require('./lib/AleOptionsDefaulter');
-const AlePlugin = require('./plugins/AlePlugin');
+const AleOptionsApply = require('./lib/AleOptionsApply');
 const WebpackDevServer = require('webpack-dev-server');
 const _ = require('lodash');
 const {
@@ -33,7 +33,6 @@ const aleWebpack = module.exports = (_options, callback) => {
 		compiler = new Compiler(options.context);
 		compiler.options = options;
 		new NodeEnvironmentPlugin().apply(compiler);
-    new AlePlugin().apply(compiler);
 		if (options.plugins && Array.isArray(options.plugins)) {
 			for (const plugin of options.plugins) {
 				if (typeof plugin === "function") {
@@ -45,8 +44,7 @@ const aleWebpack = module.exports = (_options, callback) => {
 		}
 		compiler.hooks.environment.call();
 		compiler.hooks.afterEnvironment.call();
-		compiler.options = new WebpackOptionsApply().process(options, compiler);
-
+		compiler.options = new AleOptionsApply().process(options, compiler);
 	} else {
 		throw new Error("Invalid argument: options");
 	}
