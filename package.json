@@ -1,6 +1,6 @@
 {
   "name": "ale-webpack",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "bin": {
     "ale": "bin/ale"
   },
