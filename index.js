@@ -16,8 +16,10 @@ const {
 const webpackOptionsSchema = require('webpack/schemas/WebpackOptions.json');
 const optionsSchema = _.defaultsDeep(webpackOptionsSchema, require('./schemas/AleWebpackOptions'));
 
-const aleWebpack = module.exports = (_options, callback) => {
-  let { addDevServerEntrypoints, ...options } = _options;
+const aleWebpack = module.exports = (options, callback) => {
+  if(options.ale === undefined){
+    return webpack(options, callback);
+  }
   const webpackOptionsValidationErrors = validateSchema( optionsSchema, options );
 	if (webpackOptionsValidationErrors.length) {
 		throw new WebpackOptionsValidationError(webpackOptionsValidationErrors);
@@ -27,9 +29,6 @@ const aleWebpack = module.exports = (_options, callback) => {
 		compiler = new MultiCompiler(options.map(options => aleWebpack(options)));
 	} else if (typeof options === "object") {
 		options = new AleOptionsDefaulter().process(options);
-    if(addDevServerEntrypoints){
-      WebpackDevServer.addDevServerEntrypoints(options, options.devServer);
-    }
 		compiler = new Compiler(options.context);
 		compiler.options = options;
 		new NodeEnvironmentPlugin().apply(compiler);
