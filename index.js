@@ -17,9 +17,6 @@ const webpackOptionsSchema = require('webpack/schemas/WebpackOptions.json');
 const optionsSchema = _.defaultsDeep(webpackOptionsSchema, require('./schemas/AleWebpackOptions'));
 
 const aleWebpack = module.exports = (options, callback) => {
-  if(options.ale === undefined){
-    return webpack(options, callback);
-  }
   const webpackOptionsValidationErrors = validateSchema( optionsSchema, options );
 	if (webpackOptionsValidationErrors.length) {
 		throw new WebpackOptionsValidationError(webpackOptionsValidationErrors);
