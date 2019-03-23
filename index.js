@@ -1,19 +1,9 @@
-const AleOptionsDefaulter = require('./lib/AleOptionsDefaulter');
 const AleOptionsApply = require('./lib/AleOptionsApply');
-const WebpackDevServer = require('webpack-dev-server');
+const AleOptionsDefaulter = require('./lib/AleOptionsDefaulter');
 const _ = require('lodash');
-const {
-  Compiler,
-  HotModuleReplacementPlugin,
-  MultiCompiler,
-  NodeEnvironmentPlugin,
-  WebpackOptionsApply,
-  WebpackOptionsDefaulter,
-  WebpackOptionsValidationError,
-  validateSchema,
-} = require('webpack');
-
 const webpackOptionsSchema = require('webpack/schemas/WebpackOptions.json');
+const {Compiler, MultiCompiler, NodeEnvironmentPlugin, WebpackOptionsValidationError, validateSchema} = require('webpack');
+
 const optionsSchema = _.defaultsDeep(webpackOptionsSchema, require('./schemas/AleWebpackOptions'));
 
 const aleWebpack = module.exports = (options, callback) => {
