@@ -1,6 +1,6 @@
 {
   "name": "ale-webpack",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "bin": {
     "ale": "bin/ale"
   },
@@ -12,13 +12,12 @@
   "author": "jianli",
   "license": "ISC",
   "dependencies": {
-    "@babel/core": "^7.3.3",
-    "@babel/polyfill": "^7.2.5",
-    "@babel/runtime": "^7.1.5",
+    "@babel/core": "^7.4.0",
+    "@babel/runtime": "^7.4.2",
     "acorn": "^6.1.1",
     "address": "^1.0.3",
     "babel-loader": "^8.0.5",
-    "babel-preset": "^1.0.3",
+    "babel-preset": "^1.0.4",
     "cache-loader": "^2.0.1",
     "chalk": "^2.4.2",
     "chokidar": "^2.1.2",
