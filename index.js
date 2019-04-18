@@ -16,6 +16,7 @@ const aleWebpack = module.exports = (options, callback) => {
 		compiler = new MultiCompiler(options.map(options => aleWebpack(options)));
 	} else if (typeof options === "object") {
 		options = new AleOptionsDefaulter().process(options);
+
 		compiler = new Compiler(options.context);
 		compiler.options = options;
 		new NodeEnvironmentPlugin().apply(compiler);
