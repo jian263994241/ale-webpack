@@ -5,5 +5,5 @@
 ## 安装
 
 ```
-npm install -g ale-webpack
+npm install -g ale-cli
 ```
