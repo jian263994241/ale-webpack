@@ -3,22 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <title><%= htmlWebpackPlugin.options.title || 'Webpack App'%></title>
-  <% if (htmlWebpackPlugin.files.favicon) { %>
-  <link rel="shortcut icon" href="<%= htmlWebpackPlugin.files.favicon%>">
-  <% } %>
   <% if (htmlWebpackPlugin.options.mobile) { %>
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
   <% } %>
 </head>
 <body>
-
-<% if (htmlWebpackPlugin.options.unsupportedBrowser) { %>
-<style>.unsupported-browser { display: none; }</style>
-<div class="unsupported-browser">
-  Sorry, your browser is not supported.  Please download the latest version of <a href="https://www.google.cn/chrome/">Chrome</a> or <a href="http://www.firefox.com.cn/">Firefox</a>.
-</div>
-<% } %>
 
 <% if (htmlWebpackPlugin.options.appMountId) { %>
 <div id="<%= htmlWebpackPlugin.options.appMountId%>"></div>
