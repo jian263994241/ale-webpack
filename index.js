@@ -1,8 +1,11 @@
 const AleOptionsApply = require('./lib/AleOptionsApply');
 const AleOptionsDefaulter = require('./lib/AleOptionsDefaulter');
 const _ = require('lodash');
+const webpack = require('webpack');
+const WebpackDevServer = require('webpack-dev-server');
 const webpackOptionsSchema = require('webpack/schemas/WebpackOptions.json');
-const {Compiler, MultiCompiler, NodeEnvironmentPlugin, WebpackOptionsValidationError, validateSchema} = require('webpack');
+
+const {Compiler, MultiCompiler, NodeEnvironmentPlugin, WebpackOptionsValidationError, validateSchema} = webpack;
 
 const optionsSchema = _.defaultsDeep(webpackOptionsSchema, require('./schemas/AleWebpackOptions'));
 
@@ -53,3 +56,6 @@ const aleWebpack = module.exports = (options, callback) => {
 
 	return compiler;
 }
+
+aleWebpack.webpack = webpack;
+aleWebpack.WebpackDevServer = WebpackDevServer;
