@@ -11,7 +11,11 @@ npm install -g ale-cli ale-webpack
 npm install --save ale-webpack
 ```
 
-##配置例子:
+## ale 默认参数
+
+[aleOptions.js](https://github.com/jian263994241/ale-webpack/blob/master/lib/aleOptions.js)
+
+## 配置例子:
 
 ```javascript
 
