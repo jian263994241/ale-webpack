@@ -5,5 +5,77 @@
 ## 安装
 
 ```
-npm install --save ale-cli ale-webpack
+npm install -g ale-cli ale-webpack
+
+#本地管理依赖
+npm install --save ale-webpack
+```
+
+##配置例子:
+
+```javascript
+
+const path = require('path');
+
+exports.default = {
+  entry: './src/app.js',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'bundle.js',
+  },
+  mode: 'development',
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: require.resolve('string-replace-loader'),
+          options: {
+            multiple: [
+              { search: '__uri', replace: 'require', flags: 'g' }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  resolve: {
+    alias: {
+      '~': path.resolve(__dirname, 'src')
+    }
+  },
+  ale: {
+    html: {
+      title: '招行智能联合收单',
+      appMountId: 'root',
+      mobile: true
+    }
+  }
+}
+
+exports.prod = {
+  output: {
+    filename: 'res/j/app.[hash].js',
+    chunkFilename: 'res/j/[id][chunkhash].js',
+    publicPath: 'https://img.99bill.com',
+  },
+  mode: 'production',
+  ale: {
+    html: {
+      filename: 'seashell/webapp/merchant/loan/jsd/default.html'
+    },
+    css: {
+      filename: 'res/c/[hash].css',
+      chunkFilename: 'res/c/[name].chunk.css',
+    },
+    image: {
+      outputPath: 'res/i'
+    },
+    zip: {
+      filename: 'merchant-loan-jsd@[time].zip',
+    },
+  }
+}
+
 ```
