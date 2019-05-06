@@ -5,10 +5,11 @@
 ## 安装
 
 ```
-npm install -g ale-cli ale-webpack
+## 安装命令
+npm install -g ale-cli
 
-#本地管理依赖
-npm install --save ale-webpack
+# 安装ale-webpack
+npm install --save-dev ale-webpack
 ```
 
 ## ale 默认参数
