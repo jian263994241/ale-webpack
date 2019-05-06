@@ -58,7 +58,9 @@ const aleWebpack = (options, callback) => {
 	return compiler;
 }
 
+
 exports = module.exports = aleWebpack;
+exports.WebpackDevServer = WebpackDevServer;
+exports.resolve = __dirname;
 exports.version = pkg.version;
 exports.webpack = webpack;
-exports.WebpackDevServer = WebpackDevServer;
