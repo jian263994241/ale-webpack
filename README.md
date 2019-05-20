@@ -8,8 +8,6 @@
 ## 安装命令
 npm install -g ale-cli
 
-# 安装ale-webpack
-npm install --save-dev ale-webpack
 ```
 
 ## ale 默认参数
