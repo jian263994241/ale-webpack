@@ -13,7 +13,7 @@
     "webpack"
   ],
   "author": "jianli",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@babel/core": "^7.4.0",
     "@babel/runtime": "^7.4.2",
