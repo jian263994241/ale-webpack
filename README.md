@@ -19,6 +19,7 @@ npm install -g ale-cli
 ```javascript
 
 const path = require('path');
+const webpack = require('webpack');
 
 exports.default = {
   entry: './src/app.js',
@@ -48,11 +49,24 @@ exports.default = {
       '~': path.resolve(__dirname, 'src')
     }
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      APIURL: JSON.stringify('/api'),
+    })
+  ],
   ale: {
     html: {
-      title: '招行智能联合收单',
+      title: 'Hello Word',
       appMountId: 'root',
       mobile: true
+    },
+    babel(options) {
+      options.plugins = [
+        ['styled-components', { displayName: false }],
+        ['import', { libraryName: 'antd-mobile', style: true }, 'antd-mobile'],
+        ['import', { libraryName: 'lodash', camel2DashComponentName: false, libraryDirectory: '' }, 'lodash']
+      ];
+      return options;
     }
   }
 }
@@ -66,7 +80,7 @@ exports.prod = {
   mode: 'production',
   ale: {
     html: {
-      filename: 'seashell/webapp/merchant/loan/jsd/default.html'
+      filename: 'seashell/webapp/xxxxx/default.html'
     },
     css: {
       filename: 'res/c/[hash].css',
