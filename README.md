@@ -96,3 +96,31 @@ exports.prod = {
 }
 
 ```
+
+
+## typescript
+
+### type-check
+
+add `tsconfig.json`
+
+```json
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "noEmit": true,
+    "strict": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "jsx": "react"
+  },
+  "include": [
+    "src"
+  ]
+}
+```
+
+>> and just run `tsc` and that’s it! tsc will type-check your `.ts` and `.tsx` files.
+>> Feel free to add the `--watch` flag to either tool to get immediate feedback when anything changes.  [[post](https://devblogs.microsoft.com/typescript/typescript-and-babel-7/)]
