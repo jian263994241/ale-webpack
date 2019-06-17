@@ -1,6 +1,6 @@
 {
   "name": "ale-webpack",
-  "version": "1.1.16",
+  "version": "1.1.17",
   "description": "Packs modules for browser",
   "main": "index.js",
   "scripts": {
@@ -18,7 +18,7 @@
     "@babel/core": "^7.4.0",
     "@babel/runtime": "^7.4.2",
     "babel-loader": "^8.0.5",
-    "babel-preset": "^1.0.13",
+    "babel-preset": "^1.0.15",
     "cache-loader": "^2.0.1",
     "chalk": "^2.4.2",
     "clean-webpack-plugin": "^2.0.1",
