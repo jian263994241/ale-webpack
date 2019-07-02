@@ -115,13 +115,16 @@ add `tsconfig.json`
     "isolatedModules": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "jsx": "react"
+    "jsx": "react",
+    "baseUrl": "./",
+    "paths": {
+      "~/*": ["./src/*"]
+    }
   },
   "include": [
-    "src"
+    "src/*"
   ]
 }
-
 ```
 
 >> and just run `tsc` and that’s it! tsc will type-check your `.ts` and `.tsx` files.
