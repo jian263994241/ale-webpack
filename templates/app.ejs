@@ -13,7 +13,7 @@
 <body>
 
 <% if (htmlWebpackPlugin.options.appMountId) { %>
-<div id="<%= htmlWebpackPlugin.options.appMountId%>"></div>
+<div id="<%= htmlWebpackPlugin.options.appMountId%>" style="height: 100%; position: relative; z-index: 1;"></div>
 <% } %>
 
 <% if (htmlWebpackPlugin.options.appMountIds && htmlWebpackPlugin.options.appMountIds.length > 0) { %>
