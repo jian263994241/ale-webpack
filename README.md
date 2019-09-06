@@ -75,7 +75,7 @@ exports.prod = {
   output: {
     filename: 'res/j/app.[hash].js',
     chunkFilename: 'res/j/[id][chunkhash].js',
-    publicPath: 'https://img.99bill.com',
+    publicPath: 'https://img.99bill.com/',
   },
   mode: 'production',
   ale: {
@@ -84,7 +84,7 @@ exports.prod = {
     },
     css: {
       filename: 'res/c/[hash].css',
-      chunkFilename: 'res/c/[name].chunk.css',
+      chunkFilename: 'res/c/[hash].chunk.css',
     },
     image: {
       outputPath: 'res/i'
