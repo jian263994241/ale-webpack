@@ -84,7 +84,7 @@ exports.prod = {
     },
     css: {
       filename: 'res/c/[hash].css',
-      chunkFilename: 'res/c/[hash].chunk.css',
+      chunkFilename: 'res/c/[chunkhash].chunk.css',
     },
     image: {
       outputPath: 'res/i'
