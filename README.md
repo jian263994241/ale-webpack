@@ -6,8 +6,24 @@
 
 ```
 ## 安装命令
-npm install -g ale-cli
+npm install --save ale-cli
 
+## default
+npm run dev
+
+## prod
+npm run build
+
+```
+package.json
+
+```json
+{
+  "scripts": {
+    "dev": "ale dev",
+    "build": "ale build prod"
+  },
+}
 ```
 
 ## ale 默认参数
