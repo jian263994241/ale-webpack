@@ -1,59 +1,24 @@
 {
   "name": "ale-webpack",
-  "version": "1.2.6",
-  "description": "Packs modules for browser",
+  "version": "1.0.0",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lerna:bootstrap": "lerna bootstrap",
+    "lerna:link": "lerna link"
   },
-  "keywords": [
-    "ale",
-    "ale-cli",
-    "ale-webpack",
-    "webpack"
-  ],
-  "author": "jianli",
-  "license": "MIT",
-  "dependencies": {
-    "@babel/core": "^7.6.4",
-    "@babel/runtime": "^7.6.3",
-    "babel-loader": "^8.0.6",
-    "babel-preset": "^1.1.0",
-    "cache-loader": "^4.1.0",
-    "chalk": "^2.4.2",
-    "clean-webpack-plugin": "^3.0.0",
-    "css-hot-loader": "^1.4.4",
-    "css-loader": "^3.2.0",
-    "file-loader": "^4.2.0",
-    "hmr-accept-loader": "^1.0.1",
-    "html-webpack-plugin": "^3.2.0",
-    "less": "^3.10.3",
-    "less-loader": "^5.0.0",
-    "less-plugin-glob": "^3.0.0",
-    "lodash": "^4.17.15",
-    "mini-css-extract-plugin": "0.8.0",
-    "optimize-css-assets-webpack-plugin": "^5.0.3",
-    "postcss-flexbugs-fixes": "^4.1.0",
-    "postcss-loader": "^3.0.0",
-    "postcss-preset-env": "^6.7.0",
-    "react-dev-utils": "^9.1.0",
-    "style-loader": "^1.0.0",
-    "terser-webpack-plugin": "^2.2.1",
-    "webpack": "^4.41.2",
-    "webpack-dev-server": "^3.9.0",
-    "webpackbar": "^4.0.0",
-    "zip-webpack-plugin": "^3.0.0"
-  },
-  "directories": {
-    "lib": "lib"
-  },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jian263994241/ale-webpack.git"
   },
+  "author": "jianl",
+  "license": "ISC",
   "bugs": {
     "url": "https://github.com/jian263994241/ale-webpack/issues"
   },
-  "homepage": "https://github.com/jian263994241/ale-webpack#readme"
+  "homepage": "https://github.com/jian263994241/ale-webpack#readme",
+  "dependencies": {
+    "lerna": "^3.20.2"
+  }
 }

@@ -6,8 +6,24 @@
 
 ```
 ## 安装命令
-npm install -g ale-cli
+npm install --save ale-cli
 
+## default
+npm run dev
+
+## prod
+npm run build
+
+```
+package.json
+
+```json
+{
+  "scripts": {
+    "dev": "ale dev",
+    "build": "ale build prod"
+  },
+}
 ```
 
 ## ale 默认参数
@@ -75,7 +91,7 @@ exports.prod = {
   output: {
     filename: 'res/j/app.[hash].js',
     chunkFilename: 'res/j/[id][chunkhash].js',
-    publicPath: 'https://img.99bill.com',
+    publicPath: 'https://img.99bill.com/',
   },
   mode: 'production',
   ale: {
@@ -84,7 +100,7 @@ exports.prod = {
     },
     css: {
       filename: 'res/c/[hash].css',
-      chunkFilename: 'res/c/[name].chunk.css',
+      chunkFilename: 'res/c/[chunkhash].chunk.css',
     },
     image: {
       outputPath: 'res/i'
@@ -114,12 +130,18 @@ add `tsconfig.json`
     "strict": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "jsx": "react"
+    "experimentalDecorators": true,
+    "jsx": "react",
+    "baseUrl": "./",
+    "paths": {
+      "~/*": ["./src/*"]
+    }
   },
   "include": [
-    "src"
+    "src/*"
   ]
 }
 ```
 
->> and just run `tsc` and that’s it! tsc will type-check your `.ts` and `.tsx` files. [[post](https://devblogs.microsoft.com/typescript/typescript-and-babel-7/)]
+>> and just run `tsc` and that’s it! tsc will type-check your `.ts` and `.tsx` files.
+>> Feel free to add the `--watch` flag to either tool to get immediate feedback when anything changes.  [[post](https://devblogs.microsoft.com/typescript/typescript-and-babel-7/)]
