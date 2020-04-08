@@ -8,11 +8,12 @@ const prepareUrls = require('../utils/prepareUrls');
 const aleWebpack = require('ale-webpack');
 const chalk = require('chalk');
 const openBrowser = require('react-dev-utils/openBrowser');
+const _ = require('lodash');
 
 const WebpackDevServer = aleWebpack.WebpackDevServer;
 
 const defaultServerOptions = {
-  clientLogLevel: 'none',
+  clientLogLevel: 'debug',
   compress: true,
   disableHostCheck: true,
   headers: { 'access-control-allow-origin': '*' },
@@ -27,7 +28,40 @@ const defaultServerOptions = {
 
 const isInteractive = process.stdout.isTTY;
 
-let isRestart = false;
+const devStatus = {
+  isRestart: false,
+  isFirstCompile: true,
+  configFailed: false,
+  innerPort: '',
+  compiling: false,
+};
+
+function clearRequireCache() {
+  Object.keys(require.cache).forEach(key=>{
+    delete require.cache[key];
+  })
+}
+
+const restart = _.debounce((callback)=>{
+  if(devStatus.compiling) return ;
+  unwatchConfigs();
+  clearRequireCache();
+  callback();
+}, 300);
+
+function wrapChoosePort(port) {
+  return new Promise(resolve=>{
+    if(devStatus.isRestart && devStatus.innerPort){
+      resolve(devStatus.innerPort);
+    }else{
+      choosePort(port).then(innerPort=>{
+        resolve(innerPort);
+      })
+    }
+  })
+}
+
+let n = 0;
 
 module.exports = function dev (media, opts){
 
@@ -54,23 +88,25 @@ module.exports = function dev (media, opts){
 
   const compiler = aleWebpack(options);
 
-  const webpackDevServerConfig = options.devServer;
-  const { port, host } = webpackDevServerConfig;
+  const { port, host } = options.devServer;
 
-  choosePort(port).then(innerPort=>{
+  wrapChoosePort(port).then(innerPort=>{
     if (innerPort === null) {
       return;
     }
 
+    devStatus.innerPort = innerPort;
+
     const urls = prepareUrls(PROTOCOL, host, innerPort);
-    let isFirstCompile = true;
 
     compiler.hooks.watchRun.tap('dev-server', ()=>{
-      if(isInteractive){ clearConsole() }
+      if(isInteractive && devStatus.isFirstCompile && !devStatus.isRestart ){
+        clearConsole()
+      }
 
-      if(isRestart){
+      if(devStatus.isRestart){
         log.info(`Configuration changes, restart server...\n`);
-      }else if(isFirstCompile){
+      }else if(devStatus.isFirstCompile){
         log.info('Starting the development server...\n');
       }
     });
@@ -81,8 +117,7 @@ module.exports = function dev (media, opts){
         return;
       }
 
-      // if (isFirstCompile && !isRestart) {
-      if (!isRestart) {
+      if (devStatus.isFirstCompile && !devStatus.isRestart) {
           console.log(
             [
               `  Dev server:`,
@@ -93,13 +128,22 @@ module.exports = function dev (media, opts){
           console.log();
       }
 
-      if (isFirstCompile) {
-        isFirstCompile = false;
+      if (devStatus.isFirstCompile) {
+        devStatus.isFirstCompile = false;
         openBrowser(urls.localUrlForBrowser);
       }
+
+      if(devStatus.isRestart){
+        devStatus.isRestart = false;
+      }
+
+      if (devStatus.isFirstCompile) {
+        devStatus.isFirstCompile = false;
+      }
+
     });
 
-    const server = new WebpackDevServer(compiler, webpackDevServerConfig);
+    const server = new WebpackDevServer(compiler, { ...options.devServer, port: innerPort});
 
     ['SIGINT', 'SIGTERM'].forEach(signal => {
       process.on(signal, () => {
@@ -111,6 +155,8 @@ module.exports = function dev (media, opts){
 
     let configFailed = false;
 
+    devStatus.compiling = true;
+
     server.listen(innerPort, host, err => {
       if (err) {
         console.log(err);
@@ -120,23 +166,25 @@ module.exports = function dev (media, opts){
     });
 
     function afterServer(){
-      const watcher = watchConfigs({ configFile: opts.file });
+      devStatus.compiling = false;
+
+      const watcher = watchConfigs();
       if(watcher){
         watcher.on('all', () => {
           try {
-            if(!isRestart){
-              isRestart = true;
+            if(!devStatus.isRestart){
+              devStatus.isRestart = true;
             }
-
             // 从失败中恢复过来，需要 reload 一次
             if (configFailed) {
               configFailed = false;
               server.sockWrite(server.sockets, 'content-changed');
-            }else{
-              server.close();
-              unwatchConfigs();
-              clearRequireCache();
-              dev(media, opts);
+            }else{   
+              restart(()=>{
+                console.log('restart', n++);
+                // server.close();
+                dev(media, opts);
+              });
             }
           } catch (e) {
             configFailed = true;
@@ -145,12 +193,6 @@ module.exports = function dev (media, opts){
           }
         })
       }
-    }
-
-    function clearRequireCache() {
-      Object.keys(require.cache).forEach(key=>{
-        delete require.cache[key];
-      })
     }
   });
 }

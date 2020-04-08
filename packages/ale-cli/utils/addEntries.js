@@ -8,11 +8,11 @@ function addEntries(config, options, server) {
     // we're stubbing the app in this method as it's static and doesn't require
     // a server to be supplied. createDomain requires an app with the
     // address() signature.
-    const app = server || {
-      address() {
-        return { port: options.port };
-      },
-    };
+    // const app = server || {
+    //   address() {
+    //     return { port: options.port };
+    //   },
+    // };
 
     // const domain = createDomain(options, app);
     // const sockPath = options.sockPath ? `&sockPath=${options.sockPath}` : '';
@@ -45,6 +45,16 @@ function addEntries(config, options, server) {
 
       if (options.hot || options.hotOnly) {
         config.plugins = config.plugins || [];
+
+        if (
+          !config.plugins.find(
+            (plugin) =>
+              plugin.constructor === webpack.NamedModulesPlugin
+          )
+        ) {
+          config.plugins.push(new webpack.NamedModulesPlugin());
+        }
+        
         if (
           !config.plugins.find(
             (plugin) =>
@@ -53,6 +63,8 @@ function addEntries(config, options, server) {
         ) {
           config.plugins.push(new webpack.HotModuleReplacementPlugin());
         }
+
+
       }
     });
   }
