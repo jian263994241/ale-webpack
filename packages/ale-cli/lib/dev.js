@@ -61,7 +61,6 @@ function wrapChoosePort(port) {
   })
 }
 
-let n = 0;
 
 module.exports = function dev (media, opts){
 
@@ -181,8 +180,7 @@ module.exports = function dev (media, opts){
               server.sockWrite(server.sockets, 'content-changed');
             }else{   
               restart(()=>{
-                console.log('restart', n++);
-                // server.close();
+                server.close();
                 dev(media, opts);
               });
             }
