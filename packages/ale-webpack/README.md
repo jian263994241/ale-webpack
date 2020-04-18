@@ -26,10 +26,6 @@ package.json
 }
 ```
 
-## ale 默认参数
-
-[aleOptions.js](https://github.com/jian263994241/ale-webpack/blob/master/lib/aleOptions.js)
-
 ## 配置例子:
 
 ```javascript
@@ -38,52 +34,64 @@ const path = require('path');
 const webpack = require('webpack');
 
 exports.default = {
-  entry: './src/app.js',
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js',
-  },
-  mode: 'development',
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /(node_modules|bower_components)/,
-        use: {
-          loader: require.resolve('string-replace-loader'),
-          options: {
-            multiple: [
-              { search: '__uri', replace: 'require', flags: 'g' }
-            ]
-          }
-        }
-      }
-    ]
-  },
-  resolve: {
-    alias: {
-      '~': path.resolve(__dirname, 'src')
-    }
-  },
-  plugins: [
-    new webpack.DefinePlugin({
-      APIURL: JSON.stringify('/api'),
-    })
-  ],
+  // entry: './src/app.js',
+  // output: {
+  //   path: path.resolve(__dirname, 'dist'),
+  //   filename: 'bundle.js',
+  // },
+  // mode: 'development',
+  // module: {
+  //   rules: [
+  //     {
+  //       test: /\.js$/,
+  //       exclude: /(node_modules|bower_components)/,
+  //       use: {
+  //         loader: require.resolve('string-replace-loader'),
+  //         options: {
+  //           multiple: [
+  //             { search: '__uri', replace: 'require', flags: 'g' }
+  //           ]
+  //         }
+  //       }
+  //     }
+  //   ]
+  // },
+  // resolve: {
+  //   alias: {
+  //     '~': path.resolve(__dirname, 'src')
+  //   }
+  // },
+  // plugins: [
+    
+  // ],
+  // ...webpack config
+
   ale: {
-    html: {
+    html: { // object || array 
       title: 'Hello Word',
       appMountId: 'root',
-      mobile: true
+      mobile: true,
+      // scripts: [...]
     },
-    babel(options) {
-      options.plugins = [
-        ['styled-components', { displayName: false }],
-        ['import', { libraryName: 'antd-mobile', style: true }, 'antd-mobile'],
-        ['import', { libraryName: 'lodash', camel2DashComponentName: false, libraryDirectory: '' }, 'lodash']
-      ];
-      return options;
-    }
+    css: {
+      filename: '[name].css',
+      chunkFilename: '[name].chunk.css',
+      // publicPath: undefined,
+      // inline: false,
+    },
+    postcssPlugins: [],
+    babelEnv: {},
+    babelPlugins: [
+      ['styled-components', { displayName: false }],
+      ['import', { libraryName: 'antd-mobile', style: true }, 'antd-mobile'],
+      ['import', { libraryName: 'lodash', camel2DashComponentName: false, libraryDirectory: '' }, 'lodash']
+    ],
+    define: {
+      baseURL:  JSON.stringify('https://www.github.com'),
+    },
+    fileOptions: {
+      //jpg, svg, img ... res  file-loader options
+    },
   }
 }
 
@@ -102,7 +110,7 @@ exports.prod = {
       filename: 'res/c/[hash].css',
       chunkFilename: 'res/c/[chunkhash].chunk.css',
     },
-    image: {
+    fileOptions: {
       outputPath: 'res/i'
     },
     zip: {

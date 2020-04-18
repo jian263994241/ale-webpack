@@ -1,16 +1,15 @@
-const getUserConfig = require('../config/getUserConfig');
 const {unwatchConfigs, watchConfigs} = require('../config/watch');
+const { throttle, debounce } = require('throttle-debounce');
 const addEntries = require('../utils/addEntries');
-const choosePort = require('../utils/choosePort');
-const clearConsole = require('../utils/clearConsole');
-const log = require('../utils/log');
-const prepareUrls = require('../utils/prepareUrls');
 const aleWebpack = require('ale-webpack');
 const chalk = require('chalk');
+const choosePort = require('../utils/choosePort');
+const clearConsole = require('../utils/clearConsole');
+const getUserConfig = require('../config/getUserConfig');
+const log = require('../utils/log');
 const openBrowser = require('react-dev-utils/openBrowser');
-const _ = require('lodash');
-
-const WebpackDevServer = aleWebpack.WebpackDevServer;
+const prepareUrls = require('../utils/prepareUrls');
+const WebpackDevServer = require('webpack-dev-server');
 
 const defaultServerOptions = {
   clientLogLevel: 'debug',
@@ -42,12 +41,12 @@ function clearRequireCache() {
   })
 }
 
-const restart = _.debounce((callback)=>{
+const restart = debounce(300, (callback)=>{
   if(devStatus.compiling) return ;
   unwatchConfigs();
   clearRequireCache();
   callback();
-}, 300);
+});
 
 function wrapChoosePort(port) {
   return new Promise(resolve=>{

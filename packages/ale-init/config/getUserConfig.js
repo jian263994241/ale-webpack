@@ -31,4 +31,37 @@ function merge(configfile, env){
 }
 
 
+/**
+ * getRequireDeps - 获取依赖
+ *
+ * @param  {type} filename description
+ * @return {type}          description
+ */
+function getRequireDeps (filename, incldueSelf) {
+  var result = [];
+  if(incldueSelf){
+    var cache = require.cache[filename];
+    result.push(cache.filename);
+  }
+  getchildren(filename);
 
+  return result;
+
+  function getchildren (filename){
+   var cache = require.cache[filename];
+   cache.children.forEach(function(dep1){
+     result.push(dep1.filename);
+     return getchildren(dep1.filename);
+   })
+ }
+}
+
+/**
+ * 删除缓存
+ */
+
+function delRequireCache (files) {
+  files.forEach(function(file){
+    delete require.cache[file];
+  })
+}

@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+
+const init = require('../lib/init');
+const {version} = require('../package.json');
+const program = require('commander');
+
+program.version(version);
+
+program
+  .option('-c, --clean', 'delete cache folder')
+
+
+program
+  .command('init [repo]')
+  .description('生成预配置文件: ale.config.js')
+  .action(init);
+
+
+program.parse(process.argv);

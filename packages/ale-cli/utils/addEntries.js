@@ -1,21 +1,9 @@
 'use strict';
 
-// const createDomain = require('./createDomain');
-const webpack = require('ale-webpack').webpack;
+const webpack = require('webpack');
 
 function addEntries(config, options, server) {
   if (options.inline !== false) {
-    // we're stubbing the app in this method as it's static and doesn't require
-    // a server to be supplied. createDomain requires an app with the
-    // address() signature.
-    // const app = server || {
-    //   address() {
-    //     return { port: options.port };
-    //   },
-    // };
-
-    // const domain = createDomain(options, app);
-    // const sockPath = options.sockPath ? `&sockPath=${options.sockPath}` : '';
 
     const entries = [
       require.resolve('react-dev-utils/webpackHotDevClient')
@@ -32,10 +20,8 @@ function addEntries(config, options, server) {
         Object.keys(entry).forEach((key) => {
           clone[key] = entries.concat(entry[key]);
         });
-
         return clone;
       }
-
       return entries.concat(entry);
     };
 
@@ -63,8 +49,6 @@ function addEntries(config, options, server) {
         ) {
           config.plugins.push(new webpack.HotModuleReplacementPlugin());
         }
-
-
       }
     });
   }

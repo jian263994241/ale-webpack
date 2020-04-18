@@ -1,5 +1,4 @@
 const changeJsonfile = require('../utils/changeJsonfile');
-const log = require('../utils/log');
 const chalk = require('chalk');
 const download = require('download-git-repo');
 const fs = require('fs');
@@ -43,14 +42,14 @@ module.exports = function init (repo = 'master', options){
 
       // 如果该目录不是空目录，提示
       if(!isEmptyDirectory(appPath)){
-        log.error('The folder must be empty.');
+        console.error('The folder must be empty.');
         return;
       }
 
       const { repo } = scaffoldList.find(sca=>sca.description===answers.scaffoldDesc);
       download(githubRepo + repo, './', (err) => {
         if(err){
-          return log.error(err);
+          return console.error(err);
         }
         let appName = path.basename(appPath);
         changePackageJsonName(appPath, appName).then(()=>{
@@ -58,7 +57,7 @@ module.exports = function init (repo = 'master', options){
           const spinnerInstall = ora(`${npm} installing...`);
           spinnerInstall.start();
           shell.exec(`cd ${appPath} && ${npm} install`, function () {
-            log.info(npm + ' install end');
+            console.log(npm + ' install end');
             spinnerInstall.stop();
 
             console.log();
@@ -100,7 +99,7 @@ function isDirectory(directoryName) {
 
 function isEmptyDirectory(directoryName) {
   if(!isDirectory(directoryName)){
-    log.error(`Folder does not exist.`);
+    console.error(`Folder does not exist.`);
     return;
   }
 
