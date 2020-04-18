@@ -14,4 +14,4 @@ npm install -g ale-cli
 
 配置文件: `ale.config.js`,
 
-- [ale-webpack](https://github.com/jian263994241/ale-webpack/blob/master/README.md)
+- [ale-webpack](../ale-webpack/README.md)
