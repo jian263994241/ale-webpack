@@ -11,20 +11,6 @@ const openBrowser = require('react-dev-utils/openBrowser');
 const prepareUrls = require('../utils/prepareUrls');
 const WebpackDevServer = require('webpack-dev-server');
 
-const defaultServerOptions = {
-  clientLogLevel: 'debug',
-  compress: true,
-  disableHostCheck: true,
-  headers: { 'access-control-allow-origin': '*' },
-  host: '0.0.0.0',
-  hot: true,
-  open: false,
-  overlay: true,
-  port: 3000,
-  quiet: true,
-  watchOptions: { ignored: /node_modules/ },
-};
-
 const isInteractive = process.stdout.isTTY;
 
 const devStatus = {
@@ -71,14 +57,7 @@ module.exports = function dev (media, opts){
 
   const options = getUserConfig(opts.file, media);
 
-  options.devServer = Object.assign({}, defaultServerOptions, options.devServer);
-
   const PROTOCOL = options.devServer.https ? 'https': 'http';
-
-  //默认mode: development
-  if(options.mode === undefined){
-    options.mode = 'development';
-  }
 
   if(options.devServer.hot){
     addEntries(options, options.devServer);
