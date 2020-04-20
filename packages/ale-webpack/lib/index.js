@@ -23,9 +23,7 @@ const aleWebpack = (options) => {
       }
 
       if(stats.compilation && stats.compilation.errors && stats.compilation.errors.length > 0){
-
-        const errInfo = stats.compilation.errors[0];
-        
+        const errInfo = stats.compilation.errors[0]; 
         console.error(
           chalk.redBright(errInfo)
         );
