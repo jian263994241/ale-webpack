@@ -1,5 +1,5 @@
 const {unwatchConfigs, watchConfigs} = require('../config/watch');
-const { throttle, debounce } = require('throttle-debounce');
+const { debounce } = require('throttle-debounce');
 const addEntries = require('../utils/addEntries');
 const aleWebpack = require('ale-webpack');
 const chalk = require('chalk');
@@ -55,7 +55,11 @@ module.exports = function dev (media, opts){
     process.env.CLEAR_CONSOLE = 'dev server';
   }
 
-  const options = getUserConfig(opts.file, media);
+  const compiler = aleWebpack(
+    getUserConfig(opts.file, media)
+  );
+
+  const options = compiler.options;
 
   const PROTOCOL = options.devServer.https ? 'https': 'http';
 
@@ -63,7 +67,7 @@ module.exports = function dev (media, opts){
     addEntries(options, options.devServer);
   }
 
-  const compiler = aleWebpack(options);
+  
 
   const { port, host } = options.devServer;
 
