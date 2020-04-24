@@ -1,6 +1,6 @@
 {
   "name": "ale-cli",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "bin": {
     "ale": "bin/ale"
   },

@@ -23,6 +23,7 @@ module.exports = function getUserConfig(configfile = CONFIGFILE, media){
  * @return {type}            description
  */
 function merge(configfile, env){
+  delete require.cache[require.resolve(configfile)];
   var conf = require(configfile);
   if(conf[env] && conf.default){
     return _.defaultsDeep(conf[env], conf.default);
@@ -57,12 +58,3 @@ function getRequireDeps (filename, incldueSelf) {
  }
 }
 
-/**
- * 删除缓存
- */
-
-function delRequireCache (files) {
-  files.forEach(function(file){
-    delete require.cache[file];
-  })
-}

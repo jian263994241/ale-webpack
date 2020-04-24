@@ -36,16 +36,9 @@ const devStatus = {
   compiling: false,
 };
 
-function clearRequireCache() {
-  Object.keys(require.cache).forEach(key=>{
-    delete require.cache[key];
-  })
-}
-
 const restart = _.debounce((callback)=>{
   if(devStatus.compiling) return ;
   unwatchConfigs();
-  clearRequireCache();
   callback();
 }, 300);
 
