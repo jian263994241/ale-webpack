@@ -76,6 +76,30 @@ const applyPlugin = (plugins, Plugin, pluginOpts) => {
 };
 
 /**
+ * Prepend webpackHotDevClient files to entry
+ * @param {*} entry opitions.entry
+ */
+const prependEntry = (entry) => {
+  const entries = [
+    require.resolve('react-dev-utils/webpackHotDevClient')
+  ];
+  
+  if (typeof entry === 'function') {
+    return () => Promise.resolve(entry()).then(prependEntry);
+  }
+
+  if (typeof entry === 'object' && !Array.isArray(entry)) {
+    const clone = {};
+
+    Object.keys(entry).forEach((key) => {
+      clone[key] = entries.concat(entry[key]);
+    });
+    return clone;
+  }
+  return entries.concat(entry);
+};
+
+/**
  * @param {WebpackOptions} options options to be modified
  * @returns {void}
  */
@@ -93,15 +117,29 @@ const applyWebpackOptionsDefaults = options => {
 
   delete options.ale;
 
+  D(options, 'output', {});
+
+  const publicPath = options.output.publicPath;
+
   F(options, 'devtool', () => development ? 'cheap-module-source-map': false );
   
-  applyAleDefaults(ale, {development});
+  
+  
+  applyAleDefaults(ale, {development, publicPath});
 
   D(options, 'resolve', {});
   applyWebpackResolveDefaults(options.resolve);
   
   D(options, 'devServer', {});
   applyWebpackDevServerDefaults(options.devServer);
+
+  const hotReplacementEnabled = (
+    development && options.devServer.hot && options.devServer.inline !== false
+  );
+
+  if(hotReplacementEnabled){
+    prependEntry(options.entry);
+  };
 
   D(options, 'optimization', {});
   applyOptimizationDefaults(options.optimization, {development, production});
@@ -128,6 +166,11 @@ const applyWebpackOptionsDefaults = options => {
     const plugins = [...userPlugins];
 
     applyPlugin(plugins, WebpackBar);
+
+    if(hotReplacementEnabled){
+      applyPlugin(plugins, webpack.HotModuleReplacementPlugin);
+      applyPlugin(plugins, webpack.NamedModulesPlugin);
+    }
 
     if(ale.html){
       const htmlTemplateOpts = { 
@@ -191,15 +234,16 @@ const applyWebpackOptionsDefaults = options => {
  */
 const applyAleDefaults = (
   ale, 
-  {development}
+  { development, publicPath }
 )=> {
   D(ale, 'html', false);
-  D(ale, 'css', {
+  FF(ale, 'css', (cssOpts)=>({
     filename: '[name].css',
     chunkFilename: '[name].chunk.css',
-    publicPath: undefined,
+    publicPath,
     inline: false,
-  });
+    ...cssOpts
+  }));
   F(ale, 'postcssPlugins', ()=> {
     const flexbugsFixes = require('postcss-flexbugs-fixes');
     const presetEnv = require('postcss-preset-env');
@@ -256,6 +300,7 @@ const applyWebpackDevServerDefaults = devServer => {
   D(devServer, 'host', '0.0.0.0');
   D(devServer, 'hot', true);
   D(devServer, 'open', false);
+  D(devServer, 'openPage', '');
   D(devServer, 'overlay', true);
   D(devServer, 'port', 3000);
   D(devServer, 'quiet', true);

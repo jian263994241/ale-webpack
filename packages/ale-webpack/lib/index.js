@@ -2,7 +2,7 @@ const chalk = require('chalk');
 const webpack = require('webpack');
 const { applyWebpackOptionsDefaults } = require('./config/defaults');
 
-const aleWebpack = (options) => {
+const aleWebpack = (options, callback) => {
 
   if(Array.isArray(options)){
     options.forEach((_options)=>{
@@ -12,7 +12,7 @@ const aleWebpack = (options) => {
     applyWebpackOptionsDefaults(options);
   }
   
-  const compiler = webpack(options);
+  const compiler = webpack(options, callback);
 
   compiler.hooks.done.tap('afterCompile', stats => {
     if (stats.hasErrors()) { 
