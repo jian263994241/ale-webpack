@@ -1,6 +1,6 @@
 {
   "name": "ale-cli",
-  "version": "2.0.2",
+  "version": "2.0.4",
   "bin": {
     "ale": "bin/ale"
   },
@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "address": "^1.1.2",
-    "ale-webpack": "^2.0.0",
+    "ale-webpack": "^2.0.2",
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
     "commander": "^5.0.0",

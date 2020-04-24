@@ -22,13 +22,12 @@ module.exports = function getUserConfig(configfile = CONFIGFILE, media){
  * @return {type}            description
  */
 function merge(configfile, env){
-  var conf = require(configfile);
-  if(conf[env] && conf.default){
-    return deepmerge(conf.default, conf[env]);
+  delete require.cache[require.resolve(configfile)];
+
+  const confObject = require(configfile);
+  if(confObject[env] && confObject.default){
+    return deepmerge(confObject.default, confObject[env]);
   }else{
-    return conf.default || conf;
+    return confObject.default || confObject;
   }
 }
-
-
-

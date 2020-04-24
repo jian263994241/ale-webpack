@@ -1,6 +1,5 @@
 const {unwatchConfigs, watchConfigs} = require('../config/watch');
 const { debounce } = require('throttle-debounce');
-const addEntries = require('../utils/addEntries');
 const aleWebpack = require('ale-webpack');
 const chalk = require('chalk');
 const choosePort = require('../utils/choosePort');
@@ -21,17 +20,11 @@ const devStatus = {
   compiling: false,
 };
 
-function clearRequireCache() {
-  Object.keys(require.cache).forEach(key=>{
-    delete require.cache[key];
-  })
-}
 
-const restart = debounce(300, (callback)=>{
+const restart = debounce(300, (server, callback)=>{
   if(devStatus.compiling) return ;
   unwatchConfigs();
-  clearRequireCache();
-  callback();
+  server.close(callback);
 });
 
 function wrapChoosePort(port) {
@@ -54,20 +47,14 @@ module.exports = function dev (media, opts){
   }else{
     process.env.CLEAR_CONSOLE = 'dev server';
   }
-
+ 
   const compiler = aleWebpack(
     getUserConfig(opts.file, media)
   );
-
+  
   const options = compiler.options;
 
   const PROTOCOL = options.devServer.https ? 'https': 'http';
-
-  if(options.devServer.hot){
-    addEntries(options, options.devServer);
-  }
-
-  
 
   const { port, host } = options.devServer;
 
@@ -111,7 +98,7 @@ module.exports = function dev (media, opts){
 
       if (devStatus.isFirstCompile) {
         devStatus.isFirstCompile = false;
-        openBrowser(urls.localUrlForBrowser);
+        openBrowser(urls.localUrlForBrowser + options.devServer.openPage);
       }
 
       if(devStatus.isRestart){
@@ -121,7 +108,6 @@ module.exports = function dev (media, opts){
       if (devStatus.isFirstCompile) {
         devStatus.isFirstCompile = false;
       }
-
     });
 
     const server = new WebpackDevServer(compiler, { ...options.devServer, port: innerPort});
@@ -161,8 +147,7 @@ module.exports = function dev (media, opts){
               configFailed = false;
               server.sockWrite(server.sockets, 'content-changed');
             }else{   
-              restart(()=>{
-                server.close();
+              restart(server, ()=>{
                 dev(media, opts);
               });
             }
