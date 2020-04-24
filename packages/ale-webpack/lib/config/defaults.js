@@ -4,7 +4,9 @@ const path = require("path");
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-const { DefinePlugin } = webpack;
+const {
+  DefinePlugin
+} = webpack;
 
 const NODE_MODULES_REGEXP = /[\\/]node_modules[\\/]/i;
 const CSS_REGEXP = /\.css$/;
@@ -22,9 +24,9 @@ const LESS_MODULES_REGEXP = /\.module\.less$/;
  * @returns {void}
  */
 const D = (obj, prop, value) => {
-	if (obj[prop] === undefined) {
-		obj[prop] = value;
-	}
+  if (obj[prop] === undefined) {
+    obj[prop] = value;
+  }
 };
 
 /**
@@ -37,9 +39,9 @@ const D = (obj, prop, value) => {
  * @returns {void}
  */
 const F = (obj, prop, factory) => {
-	if (obj[prop] === undefined) {
-		obj[prop] = factory();
-	}
+  if (obj[prop] === undefined) {
+    obj[prop] = factory();
+  }
 };
 
 /**
@@ -63,12 +65,12 @@ const FF = (obj, prop, factory) => {
  * @returns {void}
  */
 const applyPlugin = (plugins, Plugin, pluginOpts) => {
-  if(
+  if (
     !plugins.find(
       (plugin) =>
-        plugin.constructor === Plugin
+      plugin.constructor === Plugin
     )
-  ){
+  ) {
     plugins.push(
       new Plugin(pluginOpts)
     )
@@ -83,7 +85,7 @@ const prependEntry = (entry) => {
   const entries = [
     require.resolve('react-dev-utils/webpackHotDevClient')
   ];
-  
+
   if (typeof entry === 'function') {
     return () => Promise.resolve(entry()).then(prependEntry);
   }
@@ -109,7 +111,9 @@ const applyWebpackOptionsDefaults = options => {
   D(options, 'target', 'web');
   D(options, 'mode', 'development');
 
-  const { mode } = options;
+  const {
+    mode
+  } = options;
 
   const development = mode === 'development';
   const production = mode === 'production' || !mode;
@@ -121,15 +125,18 @@ const applyWebpackOptionsDefaults = options => {
 
   const publicPath = options.output.publicPath;
 
-  F(options, 'devtool', () => development ? 'cheap-module-source-map': false );
-  
-  
-  
-  applyAleDefaults(ale, {development, publicPath});
+  F(options, 'devtool', () => development ? 'cheap-module-source-map' : false);
+
+
+
+  applyAleDefaults(ale, {
+    development,
+    publicPath
+  });
 
   D(options, 'resolve', {});
   applyWebpackResolveDefaults(options.resolve);
-  
+
   D(options, 'devServer', {});
   applyWebpackDevServerDefaults(options.devServer);
 
@@ -137,16 +144,19 @@ const applyWebpackOptionsDefaults = options => {
     development && options.devServer.hot && options.devServer.inline !== false
   );
 
-  if(hotReplacementEnabled){
+  if (hotReplacementEnabled) {
     prependEntry(options.entry);
   };
 
   D(options, 'optimization', {});
-  applyOptimizationDefaults(options.optimization, {development, production});
+  applyOptimizationDefaults(options.optimization, {
+    development,
+    production
+  });
 
   D(options, 'module', {});
   applyModuleDefaults(options.module, {
-    development, 
+    development,
     production,
     babelEnv: ale.babelEnv,
     babelPlugins: ale.babelPlugins,
@@ -157,8 +167,10 @@ const applyWebpackOptionsDefaults = options => {
   });
 
   D(options, 'plugins', []);
-  FF(options, 'plugins', (userPlugins)=>{
-    const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+  FF(options, 'plugins', (userPlugins) => {
+    const {
+      CleanWebpackPlugin
+    } = require('clean-webpack-plugin');
     const HtmlWebpackPlugin = require('html-webpack-plugin');
     const WebpackBar = require('webpackbar');
     const ZipPlugin = require('zip-webpack-plugin');
@@ -167,20 +179,20 @@ const applyWebpackOptionsDefaults = options => {
 
     applyPlugin(plugins, WebpackBar);
 
-    if(hotReplacementEnabled){
+    if (hotReplacementEnabled) {
       applyPlugin(plugins, webpack.HotModuleReplacementPlugin);
       applyPlugin(plugins, webpack.NamedModulesPlugin);
     }
 
-    if(ale.html){
-      const htmlTemplateOpts = { 
-        inject: true, 
-        title: '\u200E', 
-        template: path.join(__dirname, '../templates/app.ejs') 
+    if (ale.html) {
+      const htmlTemplateOpts = {
+        inject: true,
+        title: '\u200E',
+        template: path.join(__dirname, '../templates/app.ejs')
       };
 
-      if(Array.isArray(ale.html)){
-        ale.html.forEach((htmlOpts)=>{
+      if (Array.isArray(ale.html)) {
+        ale.html.forEach((htmlOpts) => {
           plugins.push(
             new HtmlWebpackPlugin({
               ...htmlTemplateOpts,
@@ -188,7 +200,7 @@ const applyWebpackOptionsDefaults = options => {
             })
           )
         })
-      }else{
+      } else {
         plugins.push(
           new HtmlWebpackPlugin({
             ...htmlTemplateOpts,
@@ -198,26 +210,26 @@ const applyWebpackOptionsDefaults = options => {
       }
     }
 
-    if(ale.define){ 
+    if (ale.define) {
       plugins.push(
         new DefinePlugin(ale.define)
       )
     }
 
-    if(production){
+    if (production) {
       plugins.push(
         new CleanWebpackPlugin()
       )
     }
 
-    if(!ale.css.inline){
+    if (!ale.css.inline) {
       applyPlugin(plugins, MiniCssExtractPlugin, {
         filename: ale.css.filename,
         chunkFilename: ale.css.chunkFilename
       });
     }
 
-    if(ale.zip){
+    if (ale.zip) {
       applyPlugin(plugins, ZipPlugin, ale.zip);
     }
 
@@ -233,29 +245,33 @@ const applyWebpackOptionsDefaults = options => {
  * @returns {void}
  */
 const applyAleDefaults = (
-  ale, 
-  { development, publicPath }
-)=> {
+  ale, {
+    development,
+    publicPath
+  }
+) => {
   D(ale, 'html', false);
-  FF(ale, 'css', (cssOpts)=>({
+  FF(ale, 'css', (cssOpts) => ({
     filename: '[name].css',
     chunkFilename: '[name].chunk.css',
     publicPath,
     inline: false,
     ...cssOpts
   }));
-  F(ale, 'postcssPlugins', ()=> {
+  F(ale, 'postcssPlugins', () => {
     const flexbugsFixes = require('postcss-flexbugs-fixes');
     const presetEnv = require('postcss-preset-env');
     return [
       flexbugsFixes,
-      presetEnv({ 
-        autoprefixer: { flexbox: 'no-2009' }, 
-        stage: 3 
+      presetEnv({
+        autoprefixer: {
+          flexbox: 'no-2009'
+        },
+        stage: 3
       }),
     ]
   });
-  FF(ale, 'babelEnv', (env)=>{
+  FF(ale, 'babelEnv', (env) => {
     return {
       targets: '> 0.25%, not dead',
       ...env
@@ -263,11 +279,11 @@ const applyAleDefaults = (
   });
   D(ale, 'babelPlugins', []);
   D(ale, 'fileOptions', {});
-  FF(ale, 'define', (defineValues)=> {
+  FF(ale, 'define', (defineValues) => {
     const defaultDefined = development ? {
       'process.env': JSON.stringify(process.env),
       ...defineValues
-    }: defineValues;
+    } : defineValues;
     return defaultDefined;
   });
   D(ale, 'zip', false);
@@ -296,7 +312,10 @@ const applyWebpackDevServerDefaults = devServer => {
   D(devServer, 'clientLogLevel', 'debug');
   D(devServer, 'compress', true);
   D(devServer, 'disableHostCheck', true);
-  FF(devServer, 'headers', headers => ({ 'access-control-allow-origin': '*', ...headers}));
+  FF(devServer, 'headers', headers => ({
+    'access-control-allow-origin': '*',
+    ...headers
+  }));
   D(devServer, 'host', '0.0.0.0');
   D(devServer, 'hot', true);
   D(devServer, 'open', false);
@@ -304,7 +323,9 @@ const applyWebpackDevServerDefaults = devServer => {
   D(devServer, 'overlay', true);
   D(devServer, 'port', 3000);
   D(devServer, 'quiet', true);
-  D(devServer, 'watchOptions', { ignored: NODE_MODULES_REGEXP });
+  D(devServer, 'watchOptions', {
+    ignored: NODE_MODULES_REGEXP
+  });
 };
 
 /**
@@ -316,17 +337,18 @@ const applyWebpackDevServerDefaults = devServer => {
  * @returns {void}
  */
 const applyOptimizationDefaults = (
-  optimization,
-  { production }
+  optimization, {
+    production
+  }
 ) => {
-  F(optimization, "minimizer", ()=> [
+  F(optimization, "minimizer", () => [
     (compiler) => {
       const TerserPlugin = require('terser-webpack-plugin');
       new TerserPlugin({
         cache: true,
         parallel: true,
         sourceMap: true,
-        terserOptions:{
+        terserOptions: {
           compress: {
             drop_console: true,
             keep_fnames: true,
@@ -339,7 +361,9 @@ const applyOptimizationDefaults = (
       new OptimizeCSSAssetsPlugin({
         cssProcessorPluginOptions: {
           preset: ['default', {
-            svgo: { exclude: true }
+            svgo: {
+              exclude: true
+            }
           }]
         }
       }).apply(compiler);
@@ -358,10 +382,9 @@ const applyOptimizationDefaults = (
  * @returns {void}
  */
 const applyModuleDefaults = (
-  module, 
-  { 
-    development, 
-    production, 
+  module, {
+    development,
+    production,
     babelEnv,
     babelPlugins,
     css,
@@ -371,33 +394,38 @@ const applyModuleDefaults = (
 ) => {
 
   D(module, 'rules', []);
-  FF(module, 'rules', (rules)=>{
+  FF(module, 'rules', (rules) => {
     const preset = require('babel-preset');
     const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
     const lessPluginGlob = require('less-plugin-glob');
 
-    const getStyleLoaders =  (cssOptions, preProcessor, preProcessorOptions) => {
-      const cssSourceMap = css.inline != undefined ? !css.inline: development;
-    
+    const getStyleLoaders = (cssOptions, preProcessor, preProcessorOptions) => {
+      const cssSourceMap = css.inline != undefined ? !css.inline : development;
+
       const loaders = [
         development && {
           loader: require.resolve('css-hot-loader'),
-          options: { 
-            cssModule: !!cssOptions.modules 
+          options: {
+            cssModule: !!cssOptions.modules
           }
         },
         css.inline ? {
           loader: require.resolve('style-loader'),
-          options: { injectType : 'singletonStyleTag' }
+          options: {
+            injectType: 'singletonStyleTag'
+          }
         } : {
           loader: MiniCssExtractPlugin.loader,
-          options: { 
-            publicPath: css.publicPath 
+          options: {
+            publicPath: css.publicPath
           }
         },
         {
           loader: require.resolve('css-loader'),
-          options: { sourceMap: cssSourceMap, ...cssOptions }
+          options: {
+            sourceMap: cssSourceMap,
+            ...cssOptions
+          }
         },
         {
           loader: require.resolve('postcss-loader'),
@@ -405,9 +433,11 @@ const applyModuleDefaults = (
             ident: 'postcss',
             plugins: [
               require('postcss-flexbugs-fixes'),
-              require('postcss-preset-env')({ 
-                autoprefixer: { flexbox: 'no-2009' }, 
-                stage: 3 
+              require('postcss-preset-env')({
+                autoprefixer: {
+                  flexbox: 'no-2009'
+                },
+                stage: 3
               }),
               ...postcssPlugins
             ],
@@ -415,19 +445,20 @@ const applyModuleDefaults = (
           }
         }
       ].filter(Boolean);
-    
+
       if (preProcessor) {
         loaders.push({
           loader: require.resolve(preProcessor),
-          options: Object.assign({}, preProcessorOptions, { sourceMap: cssSourceMap })
+          options: Object.assign({}, preProcessorOptions, {
+            sourceMap: cssSourceMap
+          })
         });
       }
-    
+
       return loaders;
     };
 
-    const core = [
-      {
+    const core = [{
         test: /\.ext$/,
         use: {
           loader: require.resolve('cache-loader'),
@@ -438,11 +469,10 @@ const applyModuleDefaults = (
         exclude: NODE_MODULES_REGEXP,
         // include: options.context,
         enforce: 'pre',
-        use: [
-          {
+        use: [{
             loader: require.resolve('babel-loader'),
             options: {
-              presets: [ 
+              presets: [
                 [preset, babelEnv]
               ],
               plugins: babelPlugins
@@ -455,55 +485,56 @@ const applyModuleDefaults = (
       },
       {
         test: /\.(jpe?g|png|gif|svg|eot|ttf|woff)$/i,
-        use: [
-          {
-            loader: require.resolve('file-loader'),
-            options: fileOptions
-          }
-        ],
+        use: [{
+          loader: require.resolve('file-loader'),
+          options: fileOptions
+        }],
       }
     ];
 
     const cssRules = [{
-      test: CSS_REGEXP,
-      exclude: CSS_MODULES_REGEXP,
-      use: getStyleLoaders({
-        importLoaders: 1
-      }),
-      sideEffects: true,
-    },
-    {
-      test: CSS_MODULES_REGEXP,
-      use: getStyleLoaders({
-        importLoaders: 1,
-        modules: {
-          getLocalIdent: getCSSModuleLocalIdent
-        },
-        localsConvention: 'camelCaseOnly'
-      })
-    },
-    {
-      test: LESS_REGEXP,
-      exclude: LESS_MODULES_REGEXP,
-      use: getStyleLoaders({
-        importLoaders: 2
-      }, 'less-loader', {
-        javascriptEnabled: true, plugins: [ lessPluginGlob ]
-      }),
-      sideEffects: true,
-    },
-    {
-      test: LESS_MODULES_REGEXP,
-      use: getStyleLoaders({
-        importLoaders: 2,
-        modules: {
-          getLocalIdent: getCSSModuleLocalIdent
-        },
-        localsConvention: 'camelCaseOnly'
-      }, 'less-loader', {
-        javascriptEnabled: true, plugins: [ lessPluginGlob ]
-      })
-    }];
+        test: CSS_REGEXP,
+        exclude: CSS_MODULES_REGEXP,
+        use: getStyleLoaders({
+          importLoaders: 1
+        }),
+        sideEffects: true,
+      },
+      {
+        test: CSS_MODULES_REGEXP,
+        use: getStyleLoaders({
+          importLoaders: 1,
+          modules: {
+            getLocalIdent: getCSSModuleLocalIdent
+          },
+          localsConvention: 'camelCaseOnly'
+        })
+      },
+      {
+        test: LESS_REGEXP,
+        exclude: LESS_MODULES_REGEXP,
+        use: getStyleLoaders({
+          importLoaders: 2
+        }, 'less-loader', {
+          javascriptEnabled: true,
+          plugins: [lessPluginGlob]
+        }),
+        sideEffects: true,
+      },
+      {
+        test: LESS_MODULES_REGEXP,
+        use: getStyleLoaders({
+          importLoaders: 2,
+          modules: {
+            getLocalIdent: getCSSModuleLocalIdent
+          },
+          localsConvention: 'camelCaseOnly'
+        }, 'less-loader', {
+          javascriptEnabled: true,
+          plugins: [lessPluginGlob]
+        })
+      }
+    ];
 
     return [...core, ...cssRules, ...rules];
   })
@@ -511,5 +542,3 @@ const applyModuleDefaults = (
 
 
 exports.applyWebpackOptionsDefaults = applyWebpackOptionsDefaults;
-
-
