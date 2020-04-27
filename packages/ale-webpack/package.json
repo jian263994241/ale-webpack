@@ -3,9 +3,7 @@
   "version": "2.0.2",
   "description": "Packs modules for browser",
   "main": "lib/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "keywords": [
     "ale",
     "ale-cli",
@@ -45,7 +43,7 @@
     "lib": "lib"
   },
   "peerDependencies": {
-    "webpack": "^4.42.1"
+    "webpack": "^4.43.0"
   },
   "repository": {
     "type": "git",

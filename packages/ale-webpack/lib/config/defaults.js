@@ -1,18 +1,14 @@
-"use strict";
+'use strict'
 
-const path = require("path");
-const webpack = require('webpack');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const path = require('path')
+const webpack = require('webpack')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
-const {
-  DefinePlugin
-} = webpack;
-
-const NODE_MODULES_REGEXP = /[\\/]node_modules[\\/]/i;
-const CSS_REGEXP = /\.css$/;
-const CSS_MODULES_REGEXP = /\.module\.css$/;
-const LESS_REGEXP = /\.less$/;
-const LESS_MODULES_REGEXP = /\.module\.less$/;
+const NODE_MODULES_REGEXP = /[\\/]node_modules[\\/]/i
+const CSS_REGEXP = /\.css$/
+const CSS_MODULES_REGEXP = /\.module\.css$/
+const LESS_REGEXP = /\.less$/
+const LESS_MODULES_REGEXP = /\.module\.less$/
 
 /**
  * Sets a constant default value when undefined
@@ -25,9 +21,9 @@ const LESS_MODULES_REGEXP = /\.module\.less$/;
  */
 const D = (obj, prop, value) => {
   if (obj[prop] === undefined) {
-    obj[prop] = value;
+    obj[prop] = value
   }
-};
+}
 
 /**
  * Sets a dynamic default value when undefined, by calling the factory function
@@ -40,9 +36,9 @@ const D = (obj, prop, value) => {
  */
 const F = (obj, prop, factory) => {
   if (obj[prop] === undefined) {
-    obj[prop] = factory();
+    obj[prop] = factory()
   }
-};
+}
 
 /**
  * Sets a dynamic default value, by calling the factory function
@@ -54,107 +50,86 @@ const F = (obj, prop, factory) => {
  * @returns {void}
  */
 const FF = (obj, prop, factory) => {
-  obj[prop] = factory(obj[prop]);
-};
+  obj[prop] = factory(obj[prop])
+}
 
 /**
- * 
- * @param {Array} plugins 
- * @param {WebpackPlugin} Plugin 
- * @param {object} pluginOpts 
+ *
+ * @param {Array} plugins
+ * @param {WebpackPlugin} Plugin
+ * @param {object} pluginOpts
  * @returns {void}
  */
 const applyPlugin = (plugins, Plugin, pluginOpts) => {
-  if (
-    !plugins.find(
-      (plugin) =>
-      plugin.constructor === Plugin
-    )
-  ) {
-    plugins.push(
-      new Plugin(pluginOpts)
-    )
+  if (!plugins.find(plugin => plugin.constructor === Plugin)) {
+    plugins.push(new Plugin(pluginOpts))
   }
-};
+}
 
 /**
  * Prepend webpackHotDevClient files to entry
  * @param {*} entry opitions.entry
  */
-const prependEntry = (entry) => {
-  const entries = [
-    require.resolve('react-dev-utils/webpackHotDevClient')
-  ];
+const prependEntry = entry => {
+  const entries = [require.resolve('react-dev-utils/webpackHotDevClient')]
 
   if (typeof entry === 'function') {
-    return () => Promise.resolve(entry()).then(prependEntry);
+    return () => Promise.resolve(entry()).then(prependEntry)
   }
 
   if (typeof entry === 'object' && !Array.isArray(entry)) {
-    const clone = {};
+    const clone = {}
 
-    Object.keys(entry).forEach((key) => {
-      clone[key] = entries.concat(entry[key]);
-    });
-    return clone;
+    Object.keys(entry).forEach(key => {
+      clone[key] = entries.concat(entry[key])
+    })
+    return clone
   }
-  return entries.concat(entry);
-};
+  return entries.concat(entry)
+}
 
 /**
  * @param {WebpackOptions} options options to be modified
  * @returns {void}
  */
 const applyWebpackOptionsDefaults = options => {
+  F(options, 'context', () => process.cwd())
+  D(options, 'target', 'web')
+  D(options, 'mode', 'development')
 
-  F(options, "context", () => process.cwd());
-  D(options, 'target', 'web');
-  D(options, 'mode', 'development');
+  const { mode } = options
 
-  const {
-    mode
-  } = options;
+  const development = mode === 'development'
+  const production = mode === 'production' || !mode
+  const ale = options.ale || {}
 
-  const development = mode === 'development';
-  const production = mode === 'production' || !mode;
-  const ale = options.ale || {};
+  delete options.ale
 
-  delete options.ale;
+  D(options, 'output', {})
 
-  D(options, 'output', {});
+  const publicPath = options.output.publicPath
 
-  const publicPath = options.output.publicPath;
+  F(options, 'devtool', () => (development ? 'cheap-module-source-map' : false))
 
-  F(options, 'devtool', () => development ? 'cheap-module-source-map' : false);
+  applyAleDefaults(ale, { development, publicPath })
 
+  D(options, 'resolve', {})
+  applyWebpackResolveDefaults(options.resolve)
 
+  D(options, 'devServer', {})
+  applyWebpackDevServerDefaults(options.devServer)
 
-  applyAleDefaults(ale, {
-    development,
-    publicPath
-  });
-
-  D(options, 'resolve', {});
-  applyWebpackResolveDefaults(options.resolve);
-
-  D(options, 'devServer', {});
-  applyWebpackDevServerDefaults(options.devServer);
-
-  const hotReplacementEnabled = (
+  const hotReplacementEnabled =
     development && options.devServer.hot && options.devServer.inline !== false
-  );
 
   if (hotReplacementEnabled) {
-    prependEntry(options.entry);
-  };
+    prependEntry(options.entry)
+  }
 
-  D(options, 'optimization', {});
-  applyOptimizationDefaults(options.optimization, {
-    development,
-    production
-  });
+  D(options, 'optimization', {})
+  applyOptimizationDefaults(options.optimization, { development, production })
 
-  D(options, 'module', {});
+  D(options, 'module', {})
   applyModuleDefaults(options.module, {
     development,
     production,
@@ -163,25 +138,22 @@ const applyWebpackOptionsDefaults = options => {
     postcssPlugins: ale.postcssPlugins,
     fileOptions: ale.fileOptions,
     css: ale.css,
-    html: ale.html,
-  });
+    html: ale.html
+  })
 
-  D(options, 'plugins', []);
-  FF(options, 'plugins', (userPlugins) => {
-    const {
-      CleanWebpackPlugin
-    } = require('clean-webpack-plugin');
-    const HtmlWebpackPlugin = require('html-webpack-plugin');
-    const WebpackBar = require('webpackbar');
-    const ZipPlugin = require('zip-webpack-plugin');
+  D(options, 'plugins', [])
+  FF(options, 'plugins', userPlugins => {
+    const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+    const HtmlWebpackPlugin = require('html-webpack-plugin')
+    const WebpackBar = require('webpackbar')
+    const ZipPlugin = require('zip-webpack-plugin')
 
-    const plugins = [...userPlugins];
+    const plugins = [...userPlugins]
 
-    applyPlugin(plugins, WebpackBar);
+    applyPlugin(plugins, WebpackBar)
 
     if (hotReplacementEnabled) {
-      applyPlugin(plugins, webpack.HotModuleReplacementPlugin);
-      applyPlugin(plugins, webpack.NamedModulesPlugin);
+      applyPlugin(plugins, webpack.HotModuleReplacementPlugin)
     }
 
     if (ale.html) {
@@ -189,10 +161,10 @@ const applyWebpackOptionsDefaults = options => {
         inject: true,
         title: '\u200E',
         template: path.join(__dirname, '../templates/app.ejs')
-      };
+      }
 
       if (Array.isArray(ale.html)) {
-        ale.html.forEach((htmlOpts) => {
+        ale.html.forEach(htmlOpts => {
           plugins.push(
             new HtmlWebpackPlugin({
               ...htmlTemplateOpts,
@@ -211,122 +183,118 @@ const applyWebpackOptionsDefaults = options => {
     }
 
     if (ale.define) {
-      plugins.push(
-        new DefinePlugin(ale.define)
-      )
+      plugins.push(new webpack.DefinePlugin(ale.define))
     }
 
     if (production) {
-      plugins.push(
-        new CleanWebpackPlugin()
-      )
+      plugins.push(new CleanWebpackPlugin())
     }
 
     if (!ale.css.inline) {
       applyPlugin(plugins, MiniCssExtractPlugin, {
         filename: ale.css.filename,
         chunkFilename: ale.css.chunkFilename
-      });
+      })
     }
 
     if (ale.zip) {
-      applyPlugin(plugins, ZipPlugin, ale.zip);
+      applyPlugin(plugins, ZipPlugin, ale.zip)
     }
 
-
-
-    return plugins;
+    return plugins
   })
-
-};
+}
 
 /**
  * @param {AleOptions} ale options
  * @returns {void}
  */
-const applyAleDefaults = (
-  ale, {
-    development,
-    publicPath
-  }
-) => {
-  D(ale, 'html', false);
-  FF(ale, 'css', (cssOpts) => ({
+const applyAleDefaults = (ale, { development, publicPath }) => {
+  D(ale, 'html', false)
+  FF(ale, 'css', cssOpts => ({
     filename: '[name].css',
     chunkFilename: '[name].chunk.css',
     publicPath,
     inline: false,
     ...cssOpts
-  }));
+  }))
   F(ale, 'postcssPlugins', () => {
-    const flexbugsFixes = require('postcss-flexbugs-fixes');
-    const presetEnv = require('postcss-preset-env');
+    const flexbugsFixes = require('postcss-flexbugs-fixes')
+    const presetEnv = require('postcss-preset-env')
     return [
       flexbugsFixes,
       presetEnv({
-        autoprefixer: {
-          flexbox: 'no-2009'
-        },
+        autoprefixer: { flexbox: 'no-2009' },
         stage: 3
-      }),
+      })
     ]
-  });
-  FF(ale, 'babelEnv', (env) => {
+  })
+  FF(ale, 'babelEnv', env => {
     return {
       targets: '> 0.25%, not dead',
       ...env
     }
-  });
-  D(ale, 'babelPlugins', []);
-  D(ale, 'fileOptions', {});
-  FF(ale, 'define', (defineValues) => {
-    const defaultDefined = development ? {
-      'process.env': JSON.stringify(process.env),
-      ...defineValues
-    } : defineValues;
-    return defaultDefined;
-  });
-  D(ale, 'zip', false);
-};
+  })
+  D(ale, 'babelPlugins', [])
+  D(ale, 'fileOptions', {})
+  FF(ale, 'define', defineValues => {
+    const defaultDefined = development
+      ? {
+          'process.env': JSON.stringify(process.env),
+          ...defineValues
+        }
+      : defineValues
+    return defaultDefined
+  })
+  D(ale, 'zip', false)
+}
 
 /**
- * 
+ *
  * @param {WebpackOptions} resolve options.resolve
  * @returns {void}
  */
 const applyWebpackResolveDefaults = resolve => {
-  FF(resolve, 'alias', (alias) => ({
-    '@babel/runtime': path.dirname(require.resolve('@babel/runtime/package.json')),
+  FF(resolve, 'alias', alias => ({
+    '@babel/runtime': path.dirname(
+      require.resolve('@babel/runtime/package.json')
+    ),
     '~': path.join(process.cwd(), 'src'),
     ...alias
-  }));
-  D(resolve, 'extensions', ['.wasm', '.mjs', '.js', '.jsx', '.json', '.ts', '.tsx']);
-};
+  }))
+  D(resolve, 'extensions', [
+    '.wasm',
+    '.mjs',
+    '.js',
+    '.jsx',
+    '.json',
+    '.ts',
+    '.tsx'
+  ])
+}
 
 /**
- * 
+ *
  * @param {WebpackOptions} devServer options.devServer
  * @returns {void}
  */
 const applyWebpackDevServerDefaults = devServer => {
-  D(devServer, 'clientLogLevel', 'debug');
-  D(devServer, 'compress', true);
-  D(devServer, 'disableHostCheck', true);
+  D(devServer, 'clientLogLevel', 'debug')
+  D(devServer, 'compress', true)
+  D(devServer, 'disableHostCheck', true)
   FF(devServer, 'headers', headers => ({
     'access-control-allow-origin': '*',
     ...headers
-  }));
-  D(devServer, 'host', '0.0.0.0');
-  D(devServer, 'hot', true);
-  D(devServer, 'open', false);
-  D(devServer, 'openPage', '');
-  D(devServer, 'overlay', true);
-  D(devServer, 'port', 3000);
-  D(devServer, 'quiet', true);
-  D(devServer, 'watchOptions', {
-    ignored: NODE_MODULES_REGEXP
-  });
-};
+  }))
+  D(devServer, 'host', '0.0.0.0')
+  D(devServer, 'hot', true)
+  D(devServer, 'open', false)
+  D(devServer, 'openPage', '')
+  D(devServer, 'overlay', true)
+  D(devServer, 'port', 3000)
+  D(devServer, 'quiet', true)
+  D(devServer, 'watchOptions', { ignored: NODE_MODULES_REGEXP })
+}
 
 /**
  * @param {Optimization} optimization options
@@ -336,14 +304,10 @@ const applyWebpackDevServerDefaults = devServer => {
  * @param {boolean} options.records using records
  * @returns {void}
  */
-const applyOptimizationDefaults = (
-  optimization, {
-    production
-  }
-) => {
-  F(optimization, "minimizer", () => [
-    (compiler) => {
-      const TerserPlugin = require('terser-webpack-plugin');
+const applyOptimizationDefaults = (optimization, { production }) => {
+  F(optimization, 'minimizer', () => [
+    compiler => {
+      const TerserPlugin = require('terser-webpack-plugin')
       new TerserPlugin({
         cache: true,
         parallel: true,
@@ -351,25 +315,26 @@ const applyOptimizationDefaults = (
         terserOptions: {
           compress: {
             drop_console: true,
-            keep_fnames: true,
+            keep_fnames: true
           }
         }
-      }).apply(compiler);
+      }).apply(compiler)
     },
-    (compiler) => {
-      const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+    compiler => {
+      const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
       new OptimizeCSSAssetsPlugin({
         cssProcessorPluginOptions: {
-          preset: ['default', {
-            svgo: {
-              exclude: true
+          preset: [
+            'default',
+            {
+              svgo: { exclude: true }
             }
-          }]
+          ]
         }
-      }).apply(compiler);
+      }).apply(compiler)
     }
-  ]);
-};
+  ])
+}
 
 /**
  * @param {WebpackModule} module options
@@ -382,25 +347,25 @@ const applyOptimizationDefaults = (
  * @returns {void}
  */
 const applyModuleDefaults = (
-  module, {
+  module,
+  {
     development,
     production,
     babelEnv,
     babelPlugins,
     css,
     fileOptions,
-    postcssPlugins,
+    postcssPlugins
   }
 ) => {
-
-  D(module, 'rules', []);
-  FF(module, 'rules', (rules) => {
-    const preset = require('babel-preset');
-    const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
-    const lessPluginGlob = require('less-plugin-glob');
+  D(module, 'rules', [])
+  FF(module, 'rules', rules => {
+    const preset = require('babel-preset')
+    const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent')
+    const lessPluginGlob = require('less-plugin-glob')
 
     const getStyleLoaders = (cssOptions, preProcessor, preProcessorOptions) => {
-      const cssSourceMap = css.inline != undefined ? !css.inline : development;
+      const cssSourceMap = css.inline != undefined ? !css.inline : development
 
       const loaders = [
         development && {
@@ -409,23 +374,20 @@ const applyModuleDefaults = (
             cssModule: !!cssOptions.modules
           }
         },
-        css.inline ? {
-          loader: require.resolve('style-loader'),
-          options: {
-            injectType: 'singletonStyleTag'
-          }
-        } : {
-          loader: MiniCssExtractPlugin.loader,
-          options: {
-            publicPath: css.publicPath
-          }
-        },
+        css.inline
+          ? {
+              loader: require.resolve('style-loader'),
+              options: { injectType: 'singletonStyleTag' }
+            }
+          : {
+              loader: MiniCssExtractPlugin.loader,
+              options: {
+                publicPath: css.publicPath
+              }
+            },
         {
           loader: require.resolve('css-loader'),
-          options: {
-            sourceMap: cssSourceMap,
-            ...cssOptions
-          }
+          options: { sourceMap: cssSourceMap, ...cssOptions }
         },
         {
           loader: require.resolve('postcss-loader'),
@@ -434,17 +396,15 @@ const applyModuleDefaults = (
             plugins: [
               require('postcss-flexbugs-fixes'),
               require('postcss-preset-env')({
-                autoprefixer: {
-                  flexbox: 'no-2009'
-                },
+                autoprefixer: { flexbox: 'no-2009' },
                 stage: 3
               }),
               ...postcssPlugins
             ],
-            sourceMap: cssSourceMap,
+            sourceMap: cssSourceMap
           }
         }
-      ].filter(Boolean);
+      ].filter(Boolean)
 
       if (preProcessor) {
         loaders.push({
@@ -452,16 +412,17 @@ const applyModuleDefaults = (
           options: Object.assign({}, preProcessorOptions, {
             sourceMap: cssSourceMap
           })
-        });
+        })
       }
 
-      return loaders;
-    };
+      return loaders
+    }
 
-    const core = [{
+    const core = [
+      {
         test: /\.ext$/,
         use: {
-          loader: require.resolve('cache-loader'),
+          loader: require.resolve('cache-loader')
         }
       },
       {
@@ -469,12 +430,11 @@ const applyModuleDefaults = (
         exclude: NODE_MODULES_REGEXP,
         // include: options.context,
         enforce: 'pre',
-        use: [{
+        use: [
+          {
             loader: require.resolve('babel-loader'),
             options: {
-              presets: [
-                [preset, babelEnv]
-              ],
+              presets: [[preset, babelEnv]],
               plugins: babelPlugins
             }
           },
@@ -485,20 +445,23 @@ const applyModuleDefaults = (
       },
       {
         test: /\.(jpe?g|png|gif|svg|eot|ttf|woff)$/i,
-        use: [{
-          loader: require.resolve('file-loader'),
-          options: fileOptions
-        }],
+        use: [
+          {
+            loader: require.resolve('file-loader'),
+            options: fileOptions
+          }
+        ]
       }
-    ];
+    ]
 
-    const cssRules = [{
+    const cssRules = [
+      {
         test: CSS_REGEXP,
         exclude: CSS_MODULES_REGEXP,
         use: getStyleLoaders({
           importLoaders: 1
         }),
-        sideEffects: true,
+        sideEffects: true
       },
       {
         test: CSS_MODULES_REGEXP,
@@ -513,32 +476,39 @@ const applyModuleDefaults = (
       {
         test: LESS_REGEXP,
         exclude: LESS_MODULES_REGEXP,
-        use: getStyleLoaders({
-          importLoaders: 2
-        }, 'less-loader', {
-          javascriptEnabled: true,
-          plugins: [lessPluginGlob]
-        }),
-        sideEffects: true,
+        use: getStyleLoaders(
+          {
+            importLoaders: 2
+          },
+          'less-loader',
+          {
+            javascriptEnabled: true,
+            plugins: [lessPluginGlob]
+          }
+        ),
+        sideEffects: true
       },
       {
         test: LESS_MODULES_REGEXP,
-        use: getStyleLoaders({
-          importLoaders: 2,
-          modules: {
-            getLocalIdent: getCSSModuleLocalIdent
+        use: getStyleLoaders(
+          {
+            importLoaders: 2,
+            modules: {
+              getLocalIdent: getCSSModuleLocalIdent
+            },
+            localsConvention: 'camelCaseOnly'
           },
-          localsConvention: 'camelCaseOnly'
-        }, 'less-loader', {
-          javascriptEnabled: true,
-          plugins: [lessPluginGlob]
-        })
+          'less-loader',
+          {
+            javascriptEnabled: true,
+            plugins: [lessPluginGlob]
+          }
+        )
       }
-    ];
+    ]
 
-    return [...core, ...cssRules, ...rules];
+    return [...core, ...cssRules, ...rules]
   })
 }
 
-
-exports.applyWebpackOptionsDefaults = applyWebpackOptionsDefaults;
+exports.applyWebpackOptionsDefaults = applyWebpackOptionsDefaults
