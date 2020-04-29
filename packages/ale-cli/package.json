@@ -1,6 +1,6 @@
 {
   "name": "ale-cli",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "bin": {
     "ale": "bin/ale"
   },
@@ -31,7 +31,7 @@
     "is-root": "^2.1.0",
     "lodash": "^4.17.15",
     "ora": "^4.0.2",
-    "react-dev-utils": "^10.2.1",
+    "react-dev-utils": "^9.1.0",
     "shelljs": "^0.8.3",
     "v8-compile-cache": "^2.1.0",
     "which": "^2.0.1"
