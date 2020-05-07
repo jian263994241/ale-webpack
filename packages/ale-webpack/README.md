@@ -6,7 +6,7 @@
 
 ```
 ## 安装命令
-npm install --save ale-cli
+npm install ale-cli -D
 
 ## default
 npm run dev
