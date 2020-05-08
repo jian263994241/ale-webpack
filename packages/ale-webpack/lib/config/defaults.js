@@ -2,7 +2,7 @@
 
 const path = require('path')
 const webpack = require('webpack')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const ExtractCssChunks = require('extract-css-chunks-webpack-plugin')
 
 const NODE_MODULES_REGEXP = /[\\/]node_modules[\\/]/i
 const CSS_REGEXP = /\.css$/
@@ -191,7 +191,7 @@ const applyWebpackOptionsDefaults = options => {
     }
 
     if (!ale.css.inline) {
-      applyPlugin(plugins, MiniCssExtractPlugin, {
+      applyPlugin(plugins, ExtractCssChunks, {
         filename: ale.css.filename,
         chunkFilename: ale.css.chunkFilename
       })
@@ -380,7 +380,7 @@ const applyModuleDefaults = (
               options: { injectType: 'singletonStyleTag' }
             }
           : {
-              loader: MiniCssExtractPlugin.loader,
+              loader: ExtractCssChunks.loader,
               options: {
                 publicPath: css.publicPath
               }
