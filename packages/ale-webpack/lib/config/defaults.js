@@ -107,7 +107,7 @@ const applyWebpackOptionsDefaults = options => {
 
   D(options, 'output', {})
 
-  const publicPath = options.output.publicPath
+  const publicPath = options.output.publicPath;
 
   F(options, 'devtool', () => (development ? 'cheap-module-source-map' : false))
 
@@ -131,14 +131,15 @@ const applyWebpackOptionsDefaults = options => {
 
   D(options, 'module', {})
   applyModuleDefaults(options.module, {
-    development,
-    production,
     babelEnv: ale.babelEnv,
     babelPlugins: ale.babelPlugins,
-    postcssPlugins: ale.postcssPlugins,
-    fileOptions: ale.fileOptions,
     css: ale.css,
-    html: ale.html
+    development,
+    fileOptions: ale.fileOptions,
+    hotReplacementEnabled,
+    html: ale.html,
+    postcssPlugins: ale.postcssPlugins,
+    production,
   })
 
   D(options, 'plugins', [])
@@ -193,7 +194,8 @@ const applyWebpackOptionsDefaults = options => {
     if (!ale.css.inline) {
       applyPlugin(plugins, ExtractCssChunks, {
         filename: ale.css.filename,
-        chunkFilename: ale.css.chunkFilename
+        chunkFilename: ale.css.chunkFilename,
+        ignoreOrder: true
       })
     }
 
@@ -213,7 +215,7 @@ const applyAleDefaults = (ale, { development, publicPath }) => {
   D(ale, 'html', false)
   FF(ale, 'css', cssOpts => ({
     filename: '[name].css',
-    chunkFilename: '[name].chunk.css',
+    chunkFilename: '[id].chunk.css',
     publicPath,
     inline: false,
     ...cssOpts
@@ -350,12 +352,12 @@ const applyModuleDefaults = (
   module,
   {
     development,
-    production,
     babelEnv,
     babelPlugins,
     css,
     fileOptions,
-    postcssPlugins
+    hotReplacementEnabled,
+    postcssPlugins,
   }
 ) => {
   D(module, 'rules', [])
@@ -382,7 +384,8 @@ const applyModuleDefaults = (
           : {
               loader: ExtractCssChunks.loader,
               options: {
-                publicPath: css.publicPath
+                publicPath: css.publicPath,
+                hmr: hotReplacementEnabled
               }
             },
         {
