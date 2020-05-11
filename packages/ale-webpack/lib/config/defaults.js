@@ -238,7 +238,12 @@ const applyAleDefaults = (ale, { development, publicPath }) => {
     }
   })
   D(ale, 'babelPlugins', [])
-  D(ale, 'fileOptions', {})
+  D(ale, 'fileOptions', opts => {
+    return {
+      esModule: false,
+      ...opts
+    }
+  })
   FF(ale, 'define', defineValues => {
     const defaultDefined = development
       ? {

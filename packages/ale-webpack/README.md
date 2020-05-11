@@ -91,6 +91,7 @@ exports.default = {
     },
     fileOptions: {
       //jpg, svg, img ... res  file-loader options
+      esModule: true,
     },
   }
 }
