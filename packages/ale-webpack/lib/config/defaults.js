@@ -238,7 +238,7 @@ const applyAleDefaults = (ale, { development, publicPath }) => {
     }
   })
   D(ale, 'babelPlugins', [])
-  D(ale, 'fileOptions', opts => {
+  FF(ale, 'fileOptions', opts => {
     return {
       esModule: false,
       ...opts
