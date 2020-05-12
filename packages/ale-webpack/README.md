@@ -28,6 +28,8 @@ package.json
 
 ## 配置例子:
 
+创建一个配置文件`ale.config.js`
+
 ```javascript
 
 const path = require('path');
