@@ -5,14 +5,14 @@ const combineMerge = (target, source, options) => {
 
   source.forEach((item, index) => {
       if (typeof destination[index] === 'undefined') {
-          destination[index] = options.cloneUnlessOtherwiseSpecified(item, options)
+        destination[index] = options.cloneUnlessOtherwiseSpecified(item, options);
       } else if (options.isMergeableObject(item)) {
-          destination[index] = merge(target[index], item, options)
+        destination[index] = merge(target[index], item, options);
       } else if (target.indexOf(item) === -1) {
-          destination.push(item)
+        destination[index] = item;
       }
   })
-  return destination
+  return destination;
 };
 
 const merge = (x, y, options = { arrayMerge: combineMerge }) => deepmerge(x, y, options);
