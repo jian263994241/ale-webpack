@@ -36,36 +36,24 @@ const path = require('path');
 const webpack = require('webpack');
 
 exports.default = {
-  // entry: './src/app.js',
-  // output: {
-  //   path: path.resolve(__dirname, 'dist'),
-  //   filename: 'bundle.js',
-  // },
-  // mode: 'development',
-  // module: {
-  //   rules: [
-  //     {
-  //       test: /\.js$/,
-  //       exclude: /(node_modules|bower_components)/,
-  //       use: {
-  //         loader: require.resolve('string-replace-loader'),
-  //         options: {
-  //           multiple: [
-  //             { search: '__uri', replace: 'require', flags: 'g' }
-  //           ]
-  //         }
-  //       }
-  //     }
-  //   ]
-  // },
-  // resolve: {
-  //   alias: {
-  //     '~': path.resolve(__dirname, 'src')
-  //   }
-  // },
-  // plugins: [
-    
-  // ],
+  entry: './src/app.js',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'bundle.js',
+  },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          chunks: "all",
+          name: "vendor",
+          priority: -10,
+          enforce: true
+        },
+      }
+    },
+  },
   // ...webpack config
 
   ale: {
@@ -73,13 +61,8 @@ exports.default = {
       title: 'Hello Word',
       appMountId: 'root',
       mobile: true,
-      // scripts: [...]
-    },
-    css: {
-      filename: '[name].css',
-      chunkFilename: '[name].chunk.css',
-      // publicPath: undefined,
-      // inline: false,
+      scripts: [], //pre scripts
+      chunks: ['vendor', 'main'],
     },
     postcssPlugins: [],
     babelEnv: {},
