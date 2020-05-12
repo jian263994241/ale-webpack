@@ -61,6 +61,7 @@ exports.default = {
       title: 'Hello Word',
       appMountId: 'root',
       mobile: true,
+      stylesheets: [], // css
       scripts: [], //pre scripts
       chunks: ['vendor', 'main'],
     },
