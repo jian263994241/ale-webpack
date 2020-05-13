@@ -107,7 +107,7 @@ const applyWebpackOptionsDefaults = options => {
 
   D(options, 'output', {})
 
-  const publicPath = options.output.publicPath;
+  const publicPath = options.output.publicPath
 
   F(options, 'devtool', () => (development ? 'cheap-module-source-map' : false))
 
@@ -139,7 +139,7 @@ const applyWebpackOptionsDefaults = options => {
     hotReplacementEnabled,
     html: ale.html,
     postcssPlugins: ale.postcssPlugins,
-    production,
+    production
   })
 
   D(options, 'plugins', [])
@@ -362,7 +362,7 @@ const applyModuleDefaults = (
     css,
     fileOptions,
     hotReplacementEnabled,
-    postcssPlugins,
+    postcssPlugins
   }
 ) => {
   D(module, 'rules', [])
