@@ -58,7 +58,7 @@ exports.default = {
 
   ale: {
     html: { // object || array 
-      title: 'Hello Word',
+      title: '\u200E',
       appMountId: 'root',
       mobile: true,
       stylesheets: [], // css
