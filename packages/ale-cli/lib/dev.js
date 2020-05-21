@@ -1,4 +1,4 @@
-const {unwatchConfigs, watchConfigs} = require('../config/watch');
+const { unwatchConfigs, watchConfigs } = require('../config/watch');
 const { debounce } = require('throttle-debounce');
 const aleWebpack = require('ale-webpack');
 const chalk = require('chalk');
@@ -8,6 +8,7 @@ const getUserConfig = require('../config/getUserConfig');
 const log = require('../utils/log');
 const openBrowser = require('react-dev-utils/openBrowser');
 const prepareUrls = require('../utils/prepareUrls');
+const setEnv = require('../utils/setEnv');
 const WebpackDevServer = require('webpack-dev-server');
 
 const isInteractive = process.stdout.isTTY;
@@ -20,45 +21,40 @@ const devStatus = {
   compiling: false,
 };
 
-
-const restart = debounce(300, (server, callback)=>{
-  if(devStatus.compiling) return ;
+const restart = debounce(300, (server, callback) => {
+  if (devStatus.compiling) return;
   unwatchConfigs();
   server.close(callback);
 });
 
 function wrapChoosePort(port) {
-  return new Promise(resolve=>{
-    if(devStatus.isRestart && devStatus.innerPort){
+  return new Promise((resolve) => {
+    if (devStatus.isRestart && devStatus.innerPort) {
       resolve(devStatus.innerPort);
-    }else{
-      choosePort(port).then(innerPort=>{
+    } else {
+      choosePort(port).then((innerPort) => {
         resolve(innerPort);
-      })
+      });
     }
-  })
+  });
 }
 
+module.exports = function dev(media, opts) {
+  setEnv(opts.env);
 
-module.exports = function dev (media, opts){
-
-  if(opts.print){
-    process.env.CLEAR_CONSOLE = 'none';
-  }else{
-    process.env.CLEAR_CONSOLE = 'dev server';
+  if (opts.print) {
+    setEnv('CLEAR_CONSOLE=none');
   }
- 
-  const compiler = aleWebpack(
-    getUserConfig(opts.file, media)
-  );
-  
+
+  const compiler = aleWebpack(getUserConfig(opts.file, media));
+
   const options = compiler.options;
 
-  const PROTOCOL = options.devServer.https ? 'https': 'http';
+  const PROTOCOL = options.devServer.https ? 'https' : 'http';
 
   const { port, host } = options.devServer;
 
-  wrapChoosePort(port).then(innerPort=>{
+  wrapChoosePort(port).then((innerPort) => {
     if (innerPort === null) {
       return;
     }
@@ -67,33 +63,32 @@ module.exports = function dev (media, opts){
 
     const urls = prepareUrls(PROTOCOL, host, innerPort);
 
-    compiler.hooks.watchRun.tap('dev-server', ()=>{
-      if(isInteractive && devStatus.isFirstCompile && !devStatus.isRestart ){
-        clearConsole()
+    compiler.hooks.watchRun.tap('dev-server', () => {
+      if (isInteractive && devStatus.isFirstCompile && !devStatus.isRestart) {
+        clearConsole();
       }
 
-      if(devStatus.isRestart){
+      if (devStatus.isRestart) {
         log.info(`Configuration changes, restart server...\n`);
-      }else if(devStatus.isFirstCompile){
+      } else if (devStatus.isFirstCompile) {
         log.info('Starting the development server...\n');
       }
     });
 
-    compiler.hooks.done.tap('dev-server', stats => {
-
+    compiler.hooks.done.tap('dev-server', (stats) => {
       if (stats.hasErrors()) {
         return;
       }
 
       if (devStatus.isFirstCompile && !devStatus.isRestart) {
-          console.log(
-            [
-              `  Dev server:`,
-              `  - Local:   ${chalk.cyan(urls.localUrlForTerminal)}`,
-              `  - Network: ${chalk.cyan(urls.lanUrlForTerminal)}`,
-            ].join('\n'),
-          );
-          console.log();
+        console.log(
+          [
+            `  Dev server:`,
+            `  - Local:   ${chalk.cyan(urls.localUrlForTerminal)}`,
+            `  - Network: ${chalk.cyan(urls.lanUrlForTerminal)}`,
+          ].join('\n'),
+        );
+        console.log();
       }
 
       if (devStatus.isFirstCompile) {
@@ -101,7 +96,7 @@ module.exports = function dev (media, opts){
         openBrowser(urls.localUrlForBrowser + options.devServer.openPage);
       }
 
-      if(devStatus.isRestart){
+      if (devStatus.isRestart) {
         devStatus.isRestart = false;
       }
 
@@ -110,9 +105,12 @@ module.exports = function dev (media, opts){
       }
     });
 
-    const server = new WebpackDevServer(compiler, { ...options.devServer, port: innerPort});
+    const server = new WebpackDevServer(compiler, {
+      ...options.devServer,
+      port: innerPort,
+    });
 
-    ['SIGINT', 'SIGTERM'].forEach(signal => {
+    ['SIGINT', 'SIGTERM'].forEach((signal) => {
       process.on(signal, () => {
         server.close(() => {
           process.exit(0);
@@ -124,7 +122,7 @@ module.exports = function dev (media, opts){
 
     devStatus.compiling = true;
 
-    server.listen(innerPort, host, err => {
+    server.listen(innerPort, host, (err) => {
       if (err) {
         console.log(err);
         return;
@@ -132,32 +130,34 @@ module.exports = function dev (media, opts){
       afterServer();
     });
 
-    function afterServer(){
+    function afterServer() {
       devStatus.compiling = false;
 
       const watcher = watchConfigs();
-      if(watcher){
+      if (watcher) {
         watcher.on('all', () => {
           try {
-            if(!devStatus.isRestart){
+            if (!devStatus.isRestart) {
               devStatus.isRestart = true;
             }
             // 从失败中恢复过来，需要 reload 一次
             if (configFailed) {
               configFailed = false;
               server.sockWrite(server.sockets, 'content-changed');
-            }else{   
-              restart(server, ()=>{
+            } else {
+              restart(server, () => {
                 dev(media, opts);
               });
             }
           } catch (e) {
             configFailed = true;
-            console.error(chalk.red(`Watch handler failed, since ${e.message}`));
+            console.error(
+              chalk.red(`Watch handler failed, since ${e.message}`),
+            );
             console.error(e);
           }
-        })
+        });
       }
     }
   });
-}
+};

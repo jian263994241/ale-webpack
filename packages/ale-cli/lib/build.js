@@ -1,18 +1,21 @@
 const getUserConfig = require('../config/getUserConfig');
 const aleWebpack = require('ale-webpack');
-const log = require('../utils/log')
+const log = require('../utils/log');
+const setEnv = require('../utils/setEnv');
 
-module.exports = function build (media, opts){
+module.exports = function build(media, opts) {
+  setEnv(opts.env);
+
   const options = getUserConfig(opts.file, media);
 
   //默认mode: development
-  if(options.mode === undefined){
+  if (options.mode === undefined) {
     options.mode = 'production';
   }
 
   const compiler = aleWebpack(options);
 
-  compiler.run((err, stats)=>{
+  compiler.run((err, stats) => {
     if (err) {
       log.error(err.stack || err);
       if (err.details) {
@@ -21,4 +24,4 @@ module.exports = function build (media, opts){
       return;
     }
   });
-}
+};
