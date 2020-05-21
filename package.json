@@ -29,7 +29,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged --pattern \"**/*.*(js|jsx)\""
+      "pre-commit": "pretty-quick --staged --pattern \"**/*.*(js|jsx)\"",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "config": {
