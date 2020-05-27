@@ -1,0 +1,34 @@
+{
+  "name": "ale-scaffold",
+  "version": "1.0.0",
+  "description": "ale scaffold",
+  "main": "index.js",
+  "bin": {
+    "ale-scaffold": "bin/ale-scaffold",
+    "ale-sc": "bin/ale-scaffold"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "chalk": "^4.0.0",
+    "commander": "^5.1.0",
+    "download-git-repo": "^3.0.2",
+    "inquirer": "^7.1.0",
+    "is-plain-object": "^3.0.0",
+    "ora": "^4.0.4",
+    "shelljs": "^0.8.4",
+    "which": "^2.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ale",
+    "webpack",
+    "scaffold"
+  ],
+  "author": "jian.li",
+  "license": "ISC"
+}

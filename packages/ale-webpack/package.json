@@ -43,7 +43,7 @@
     "lib": "lib"
   },
   "peerDependencies": {
-    "webpack": "^4.43.0"
+    "webpack": ">=4.43.0"
   },
   "repository": {
     "type": "git",

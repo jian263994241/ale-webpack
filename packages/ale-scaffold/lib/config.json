@@ -1,0 +1,14 @@
+{
+  "scaffold": [
+    {
+      "name": "default",
+      "description": "default 默认配置",
+      "repo": "#default"
+    },
+    {
+      "name": "wonder-ui",
+      "description": "wonder-ui 移动H5脚手架",
+      "repo": "#mobile"
+    }
+  ]
+}

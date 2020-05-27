@@ -1,5 +1,5 @@
-const changeJsonfile = require('../utils/changeJsonfile');
 const chalk = require('chalk');
+const changeJsonfile = require('./changeJsonfile');
 const download = require('download-git-repo');
 const fs = require('fs');
 const inquirer = require('inquirer');
@@ -7,25 +7,18 @@ const ora = require('ora');
 const path = require('path');
 const shell = require('shelljs');
 const which = require('which');
+const config = require('./config.json');
 
 const githubRepo = 'github:jian263994241/default';
-const scaffoldList = [
-  {
-    name: 'wonder-ui',
-    description: '活动页脚手架',
-    repo: '#wonder-ui-ale'
-  },
-]
-
+const scaffoldList = config.scaffold;
 
 const cwd = process.cwd();
 
-module.exports = function init (repo = 'master', options){
-
+module.exports = function init(repo = 'master', options) {
   const appPath = path.resolve(cwd, './');
 
   // 如果不存在该目录，则新建一个
-  if(!fs.existsSync(appPath)){
+  if (!fs.existsSync(appPath)) {
     fs.mkdirSync(appPath);
   }
 
@@ -34,25 +27,26 @@ module.exports = function init (repo = 'master', options){
       {
         type: 'list',
         name: 'scaffoldDesc',
-        message: 'Please choose one to start with Ale.',
-        choices: scaffoldList.map(sca=>sca.description)
-      }
+        message: 'Please choose one to start:',
+        choices: scaffoldList.map((sca) => sca.description),
+      },
     ])
-    .then(answers => {
-
+    .then((answers) => {
       // 如果该目录不是空目录，提示
-      if(!isEmptyDirectory(appPath)){
+      if (!isEmptyDirectory(appPath)) {
         console.error('The folder must be empty.');
         return;
       }
 
-      const { repo } = scaffoldList.find(sca=>sca.description===answers.scaffoldDesc);
+      const { repo } = scaffoldList.find(
+        (sca) => sca.description === answers.scaffoldDesc,
+      );
       download(githubRepo + repo, './', (err) => {
-        if(err){
+        if (err) {
           return console.error(err);
         }
         let appName = path.basename(appPath);
-        changePackageJsonName(appPath, appName).then(()=>{
+        changePackageJsonName(appPath, appName).then(() => {
           const npm = findNpm();
           const spinnerInstall = ora(`${npm} installing...`);
           spinnerInstall.start();
@@ -62,21 +56,11 @@ module.exports = function init (repo = 'master', options){
 
             console.log();
             console.log(`Success!`);
-            console.log('Inside that directory, you can run several commands:');
-            console.log();
-            console.log(chalk.cyan(`  ale dev`));
-            console.log('    Starts the development server.');
-            console.log();
-            console.log(chalk.cyan(`  ale build`));
-            console.log('    Bundles the app into output files "dist" for production.');
-            console.log();
           });
-        })
-      })
-
+        });
+      });
     });
-}
-
+};
 
 function findNpm() {
   const npms = ['tnpm', 'cnpm', 'npm'];
@@ -85,9 +69,7 @@ function findNpm() {
       which.sync(npms[i]);
       // console.log('use npm: ' + npms[i]);
       return npms[i];
-    } catch (e) {
-
-    }
+    } catch (e) {}
   }
   throw new Error('Please install npm');
 }
@@ -98,28 +80,28 @@ function isDirectory(directoryName) {
 }
 
 function isEmptyDirectory(directoryName) {
-  if(!isDirectory(directoryName)){
+  if (!isDirectory(directoryName)) {
     console.error(`Folder does not exist.`);
     return;
   }
 
   const dirList = fs.readdirSync(directoryName);
 
-  if(dirList.length === 0){
+  if (dirList.length === 0) {
     return true;
-  }else if(dirList.length === 1 && dirList[0].toLowerCase() === '.ds_store'){
+  } else if (dirList.length === 1 && dirList[0].toLowerCase() === '.ds_store') {
     return true;
-  }else{
+  } else {
     return false;
   }
 }
 
 function changePackageJsonName(appPath, appName) {
-  return new Promise(resolve=>{
+  return new Promise((resolve) => {
     const pkgFile = `${appPath}/package.json`;
-    if(fs.existsSync(pkgFile) && appName){
+    if (fs.existsSync(pkgFile) && appName) {
       changeJsonfile(pkgFile, {
-        name: appName
+        name: appName,
       });
     }
     resolve();

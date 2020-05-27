@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+const init = require('../lib/init');
+const { version } = require('../package.json');
+const program = require('commander');
+
+program.version(version);
+
+program.option('-c, --clean', 'delete cache folder');
+
+program.command('init [repo]').description('Select project files').action(init);
+
+program.parse(process.argv);
