@@ -1,6 +1,6 @@
 {
   "name": "ale-scaffold",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "ale scaffold",
   "main": "index.js",
   "bin": {

@@ -63,7 +63,7 @@ module.exports = function init(repo = 'master', options) {
 };
 
 function findNpm() {
-  const npms = ['tnpm', 'cnpm', 'npm'];
+  const npms = ['npm'];
   for (let i = 0; i < npms.length; i++) {
     try {
       which.sync(npms[i]);
