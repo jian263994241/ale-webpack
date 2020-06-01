@@ -25,7 +25,7 @@ module.exports = function changeJsonfile(jsonFile, options) {
           json[prop] = options[prop];
         }
 
-        const str = JSON.stringify(json);
+        const str = JSON.stringify(json, null, 2);
 
         fs.writeFile(jsonFile, str, function (err) {
           if (err) {
