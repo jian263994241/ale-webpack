@@ -1,6 +1,6 @@
 {
   "name": "ale-webpack",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "Packs modules for browser",
   "main": "lib/index.js",
   "scripts": {},
@@ -52,5 +52,8 @@
   "bugs": {
     "url": "https://github.com/jian263994241/ale-webpack/issues"
   },
-  "homepage": "https://github.com/jian263994241/ale-webpack#readme"
+  "homepage": "https://github.com/jian263994241/ale-webpack#readme",
+  "devDependencies": {
+    "webpack": "^4.43.0"
+  }
 }
