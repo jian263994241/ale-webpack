@@ -11,6 +11,6 @@ npm install ale-cli -D
 
 ## 配置
 
-配置文件: `ale.config.js`,
+配置文件: `.alerc.js`,
 
 - [ale-webpack](https://github.com/jian263994241/ale-webpack/blob/master/packages/ale-webpack/README.md)
