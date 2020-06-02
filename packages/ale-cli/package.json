@@ -1,6 +1,6 @@
 {
   "name": "ale-cli",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "bin": {
     "ale": "bin/ale"
   },
@@ -16,11 +16,14 @@
   "author": "jianl",
   "license": "MIT",
   "dependencies": {
+    "@babel/core": "^7.10.2",
+    "@babel/register": "^7.10.1",
     "address": "^1.1.2",
     "ale-webpack": "^2.0.6",
+    "babel-preset": "^1.1.4",
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
-    "commander": "^5.0.0",
+    "commander": "^5.1.0",
     "deepmerge": "^4.2.2",
     "detect-port": "^1.3.0",
     "inquirer": "^7.1.0",

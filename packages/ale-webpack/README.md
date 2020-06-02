@@ -29,7 +29,7 @@ package.json
 
 ## 配置例子:
 
-创建一个配置文件`.alerc.js`
+项目根目录创建一个配置文件`.alerc.js`
 
 ```javascript
 import path from 'path';

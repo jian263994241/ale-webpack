@@ -1,27 +1,67 @@
 #!/usr/bin/env node
 
+const path = require('path');
 const build = require('../lib/build');
 const dev = require('../lib/dev');
+const info = require('../lib/info');
 const { version } = require('../package.json');
 const { program } = require('commander');
+const { CONFIGFILE } = require('../config/contants');
+
+require('@babel/register')({
+  // This will override `node_modules` ignoring - you can alternatively pass
+  // an array of strings to be explicitly matched or a regex / glob
+  ignore: [
+    // When a file path matches this regex then it is **not** compiled
+    /[\\/]node_modules[\\/]/i,
+
+    // The file's path is also passed to any ignore functions. It will
+    // **not** be compiled if `true` is returned.
+    function(filepath) {
+      return path.basename(filepath) !== CONFIGFILE;
+    },
+  ],
+  only: [
+    // File paths that **don't** match this regex are not compiled
+    new RegExp(process.cwd()),
+
+    // File paths that **do not** return true are not compiled
+    function(filepath) {
+      return path.basename(filepath) === CONFIGFILE;
+    },
+  ],
+  extensions: ['.es6', '.es', '.jsx', '.js', '.mjs'],
+  presets: [
+    [
+      require('babel-preset'),
+      {
+        targets: {
+          node: true,
+        },
+      },
+    ],
+  ],
+  // Setting this to false will disable the cache.
+  cache: true,
+});
 
 program.version(version);
 
-program.option('-c, --clean', 'delete cache folder');
+program
+  .command('dev [media]')
+  .description('编译文件, Default config file: .alerc.js')
+  .option('-f, --file <filename>', 'Specify the file path of config file')
+  .option('-p, --print', 'print info')
+  .option('--env <envConfig>', 'cross-env')
+  .action(dev);
 
 program
-	.command('dev [media]')
-	.description('编译文件, 默认配置: ale.config.js')
-	.option('-f, --file <filename>', 'specify the file path of `ale.config.js`')
-	.option('-p, --print', 'print info')
-	.option('--env <envConfig>', 'cross-env')
-	.action(dev);
+  .command('build [media]')
+  .description('编译文件, 默认配置: ale.config.js')
+  .option('-f, --file <filename>', 'specify the file path of `ale.config.js`')
+  .option('--env <envConfig>', 'cross-env')
+  .action(build);
 
-program
-	.command('build [media]')
-	.description('编译文件, 默认配置: ale.config.js')
-	.option('-f, --file <filename>', 'specify the file path of `ale.config.js`')
-	.option('--env <envConfig>', 'cross-env')
-	.action(build);
+program.command('info').description('信息').action(info);
 
 program.parse(process.argv);

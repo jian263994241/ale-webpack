@@ -1,7 +1,7 @@
-const {CONFIGFILE, USER_CONFIGS} = require('./contants');
+const { CONFIGFILE, USER_CONFIGS } = require('../config/contants');
 const chokidar = require('chokidar');
-const {realpathSync} = require('fs');
-const {resolve} = require('path');
+const { realpathSync } = require('fs');
+const { resolve } = require('path');
 
 // 按 key 存，值为数组
 const watchers = {};
@@ -13,7 +13,7 @@ function watch(key, files, opts = {}) {
   }
   const watcher = chokidar.watch(files, {
     ignoreInitial: true,
-    ...opts
+    ...opts,
   });
   watchers[key].push(watcher);
   return watcher;
@@ -24,7 +24,7 @@ function unwatch(key) {
     return Object.keys(watchers).forEach(unwatch);
   }
   if (watchers[key]) {
-    watchers[key].forEach(watcher => {
+    watchers[key].forEach((watcher) => {
       watcher.close();
     });
     delete watchers[key];
@@ -33,7 +33,7 @@ function unwatch(key) {
 
 const cwd = process.cwd();
 const appDirectory = realpathSync(cwd);
-const resolveApp = relativePath => resolve(appDirectory, relativePath);
+const resolveApp = (relativePath) => resolve(appDirectory, relativePath);
 
 function watchConfigs(opts = {}) {
   const { configFile = CONFIGFILE } = opts;
@@ -48,10 +48,9 @@ function unwatchConfigs() {
   unwatch(USER_CONFIGS);
 }
 
-
 module.exports = {
   watch,
   unwatch,
   watchConfigs,
-  unwatchConfigs
-}
+  unwatchConfigs,
+};

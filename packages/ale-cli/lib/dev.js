@@ -1,10 +1,10 @@
-const { unwatchConfigs, watchConfigs } = require('../config/watch');
+const { unwatchConfigs, watchConfigs } = require('../utils/watch');
 const { debounce } = require('throttle-debounce');
 const aleWebpack = require('ale-webpack');
 const chalk = require('chalk');
 const choosePort = require('../utils/choosePort');
 const clearConsole = require('../utils/clearConsole');
-const getUserConfig = require('../config/getUserConfig');
+const getUserConfig = require('../utils/getUserConfig');
 const log = require('../utils/log');
 const openBrowser = require('react-dev-utils/openBrowser');
 const prepareUrls = require('../utils/prepareUrls');

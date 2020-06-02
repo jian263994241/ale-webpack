@@ -1,4 +1,4 @@
-const getUserConfig = require('../config/getUserConfig');
+const getUserConfig = require('../utils/getUserConfig');
 const aleWebpack = require('ale-webpack');
 const log = require('../utils/log');
 const setEnv = require('../utils/setEnv');

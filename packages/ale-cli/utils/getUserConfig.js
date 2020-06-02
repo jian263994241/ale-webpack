@@ -1,18 +1,17 @@
-const {CONFIGFILE} = require('./contants');
+const { CONFIGFILE } = require('../config/contants');
 const fs = require('fs');
 const path = require('path');
-const deepmerge = require('../utils/deepmerge');
+const deepmerge = require('./deepmerge');
 
 const cwd = process.cwd();
 
-module.exports = function getUserConfig(configfile = CONFIGFILE, media){
+module.exports = function getUserConfig(configfile = CONFIGFILE, media) {
   configfile = path.join(cwd, configfile);
-  if(!fs.existsSync(configfile)){
-    return console.error('can not find config file.');
+  if (!fs.existsSync(configfile)) {
+    throw `Can not find ${CONFIGFILE}`;
   }
   return merge(configfile, media);
-}
-
+};
 
 /**
  * merge - 合并配置
@@ -21,13 +20,13 @@ module.exports = function getUserConfig(configfile = CONFIGFILE, media){
  * @param  {type} env        description
  * @return {type}            description
  */
-function merge(configfile, env){
+function merge(configfile, env) {
   delete require.cache[require.resolve(configfile)];
 
   const confObject = require(configfile);
-  if(confObject[env] && confObject.default){
+  if (confObject[env] && confObject.default) {
     return deepmerge(confObject.default, confObject[env]);
-  }else{
+  } else {
     return confObject.default || confObject;
   }
 }
