@@ -235,7 +235,6 @@ const applyAleDefaults = (ale, { development, publicPath }) => {
   });
   FF(ale, 'babelEnv', (env) => {
     return {
-      targets: '> 0.25%, not dead',
       ...env,
     };
   });
