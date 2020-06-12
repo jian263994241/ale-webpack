@@ -445,6 +445,7 @@ const applyModuleDefaults = (
             options: {
               presets: [[preset, babelEnv]],
               plugins: babelPlugins,
+              sourceType: 'unambiguous',
             },
           },
           {
