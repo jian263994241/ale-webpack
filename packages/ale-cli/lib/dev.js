@@ -1,6 +1,6 @@
 const { unwatchConfigs, watchConfigs } = require('../utils/watch');
 const { debounce } = require('throttle-debounce');
-const aleWebpack = require('ale-webpack');
+const { aleWebpack, WebpackDevServer } = require('ale-webpack');
 const chalk = require('chalk');
 const choosePort = require('../utils/choosePort');
 const clearConsole = require('../utils/clearConsole');
@@ -9,7 +9,6 @@ const log = require('../utils/log');
 const openBrowser = require('react-dev-utils/openBrowser');
 const prepareUrls = require('../utils/prepareUrls');
 const setEnv = require('../utils/setEnv');
-const WebpackDevServer = require('webpack-dev-server');
 
 const isInteractive = process.stdout.isTTY;
 

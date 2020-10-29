@@ -1,4 +1,5 @@
 {
+  "arrowParens": "always",
   "printWidth": 80,
   "tabWidth": 2,
   "useTabs": false,
@@ -12,23 +13,38 @@
   "overrides": [
     {
       "files": ".prettierrc",
-      "options": { "parser": "json", "trailingComma": "none" }
+      "options": {
+        "parser": "json",
+        "trailingComma": "none"
+      }
     },
     {
       "files": ".babelrc",
-      "options": { "parser": "json", "trailingComma": "none" }
+      "options": {
+        "parser": "json",
+        "trailingComma": "none"
+      }
     },
     {
       "files": "*.ts",
-      "options": { "parser": "typescript", "trailingComma": "none" }
+      "options": {
+        "parser": "typescript",
+        "trailingComma": "none"
+      }
     },
     {
       "files": "*.tsx",
-      "options": { "parser": "typescript", "trailingComma": "none" }
+      "options": {
+        "parser": "typescript",
+        "trailingComma": "none"
+      }
     },
     {
       "files": "*.json",
-      "options": { "parser": "json", "trailingComma": "none" }
+      "options": {
+        "parser": "json",
+        "trailingComma": "none"
+      }
     }
   ]
 }

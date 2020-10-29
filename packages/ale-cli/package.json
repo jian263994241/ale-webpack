@@ -1,6 +1,6 @@
 {
   "name": "ale-cli",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "bin": {
     "ale": "bin/ale"
   },
@@ -16,22 +16,20 @@
   "author": "jianl",
   "license": "MIT",
   "dependencies": {
-    "@babel/core": "^7.10.2",
-    "@babel/register": "^7.10.1",
+    "@babel/core": "^7.12.3",
+    "@babel/register": "^7.12.1",
     "address": "^1.1.2",
-    "ale-webpack": "^2.0.6",
-    "babel-preset": "^1.1.4",
-    "chalk": "^4.0.0",
-    "chokidar": "^3.3.1",
+    "ale-webpack": "^3.0.0-beta.1",
+    "babel-preset": "^1.1.7",
+    "chalk": "^4.1.0",
+    "chokidar": "^3.4.3",
     "commander": "^5.1.0",
     "deepmerge": "^4.2.2",
     "detect-port": "^1.3.0",
     "inquirer": "^7.1.0",
     "is-root": "^2.1.0",
     "react-dev-utils": "^9.1.0",
-    "throttle-debounce": "^2.1.0",
-    "webpack": "^4.43.0",
-    "webpack-dev-server": "^3.11.0"
+    "throttle-debounce": "^2.1.0"
   },
   "repository": {
     "type": "git",

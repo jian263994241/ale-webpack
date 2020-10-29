@@ -93,7 +93,7 @@ export default {
 
 export const prod = {
   output: {
-    filename: 'res/j/app.[hash].js',
+    filename: 'res/j/app.[fullhash].js',
     chunkFilename: 'res/j/[id][chunkhash].js',
     publicPath: 'https://img.99bill.com/',
   },
@@ -103,7 +103,7 @@ export const prod = {
       filename: 'seashell/webapp/xxxxx/default.html',
     },
     css: {
-      filename: 'res/c/[hash].css',
+      filename: 'res/c/[fullhash].css',
       chunkFilename: 'res/c/[chunkhash].chunk.css',
     },
     fileOptions: {
@@ -112,6 +112,7 @@ export const prod = {
     zip: {
       filename: `pkg@${version}.zip`,
     },
+    // zip : true  zip filename autoamtic
   },
 };
 ```

@@ -20,10 +20,11 @@
     "lerna": "^3.20.2"
   },
   "devDependencies": {
-    "@commitlint/cli": "^8.3.5",
-    "@commitlint/config-conventional": "^8.3.4",
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
     "cz-conventional-changelog": "^3.2.0",
     "husky": "^4.2.5",
+    "lerna-update-wizard": "^0.17.8",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1"
   },

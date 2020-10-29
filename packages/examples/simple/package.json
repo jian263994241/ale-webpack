@@ -4,11 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "ale dev"
+    "dev": "../../ale-cli/bin/ale dev"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "ale-cli": "^0.3.6"
-  }
+  "dependencies": {}
 }

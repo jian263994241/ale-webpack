@@ -2,7 +2,12 @@
 
 const path = require('path');
 const webpack = require('webpack');
-const ExtractCssChunks = require('extract-css-chunks-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const FileManagerPlugin = require('filemanager-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const WebpackBar = require('webpackbar');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const NODE_MODULES_REGEXP = /[\\/]node_modules[\\/]/i;
 const CSS_REGEXP = /\.css$/;
@@ -103,6 +108,10 @@ const applyWebpackOptionsDefaults = (options = {}) => {
   const production = mode === 'production' || !mode;
   const ale = options.ale || {};
 
+  if (production) {
+    process.env.NODE_ENV = 'production';
+  }
+
   delete options.ale;
 
   D(options, 'output', {});
@@ -146,14 +155,14 @@ const applyWebpackOptionsDefaults = (options = {}) => {
 
   D(options, 'plugins', []);
   FF(options, 'plugins', (userPlugins) => {
-    const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-    const HtmlWebpackPlugin = require('html-webpack-plugin');
-    const WebpackBar = require('webpackbar');
-    const ZipPlugin = require('zip-webpack-plugin');
-
     const plugins = [...userPlugins];
 
     applyPlugin(plugins, WebpackBar);
+    applyPlugin(plugins, webpack.EnvironmentPlugin, {
+      NODE_ENV: 'development',
+      DEBUG: false,
+      SERVICE_ENV: 'none',
+    });
 
     if (hotReplacementEnabled) {
       applyPlugin(plugins, webpack.HotModuleReplacementPlugin);
@@ -194,15 +203,34 @@ const applyWebpackOptionsDefaults = (options = {}) => {
     }
 
     if (!ale.css.inline) {
-      applyPlugin(plugins, ExtractCssChunks, {
+      applyPlugin(plugins, MiniCssExtractPlugin, {
         filename: ale.css.filename,
         chunkFilename: ale.css.chunkFilename,
         ignoreOrder: true,
       });
     }
 
-    if (ale.zip) {
-      applyPlugin(plugins, ZipPlugin, ale.zip);
+    if (ale.zip && options.output.path) {
+      applyPlugin(plugins, FileManagerPlugin, {
+        events: {
+          onEnd: {
+            archive: [
+              {
+                source: options.output.path,
+                destination: path.join(
+                  options.output.path,
+                  ale.zip.filename ||
+                    path.basename(process.cwd()) +
+                      new Date()
+                        .toLocaleString(undefined, { hour12: false })
+                        .replace(/\//g, '-') +
+                      '.zip',
+                ),
+              },
+            ],
+          },
+        },
+      });
     }
 
     return plugins;
@@ -210,6 +238,7 @@ const applyWebpackOptionsDefaults = (options = {}) => {
 };
 
 /**
+ * ale default
  * @param {AleOptions} ale options
  * @returns {void}
  */
@@ -258,7 +287,7 @@ const applyAleDefaults = (ale, { development, publicPath }) => {
 };
 
 /**
- *
+ * resolve defauilt
  * @param {WebpackOptions} resolve options.resolve
  * @returns {void}
  */
@@ -270,6 +299,12 @@ const applyWebpackResolveDefaults = (resolve) => {
     '~': path.join(process.cwd(), 'src'),
     ...alias,
   }));
+
+  FF(resolve, 'fallback', (fallback) => ({
+    url: require.resolve('url/'),
+    ...fallback,
+  }));
+
   D(resolve, 'extensions', [
     '.wasm',
     '.mjs',
@@ -282,7 +317,7 @@ const applyWebpackResolveDefaults = (resolve) => {
 };
 
 /**
- *
+ * devServer default
  * @param {WebpackOptions} devServer options.devServer
  * @returns {void}
  */
@@ -317,9 +352,7 @@ const applyOptimizationDefaults = (optimization, { production }) => {
     (compiler) => {
       const TerserPlugin = require('terser-webpack-plugin');
       new TerserPlugin({
-        cache: true,
         parallel: true,
-        sourceMap: true,
         terserOptions: {
           compress: {
             drop_console: true,
@@ -329,22 +362,13 @@ const applyOptimizationDefaults = (optimization, { production }) => {
       }).apply(compiler);
     },
     (compiler) => {
-      const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-      new OptimizeCSSAssetsPlugin({
-        cssProcessorPluginOptions: {
-          preset: [
-            'default',
-            {
-              svgo: { exclude: true },
-            },
-          ],
-        },
-      }).apply(compiler);
+      new CssMinimizerPlugin().apply(compiler);
     },
   ]);
 };
 
 /**
+ * module default
  * @param {WebpackModule} module options
  * @param {Object} options options
  * @param {boolean} options.cache is caching enabled
@@ -356,21 +380,12 @@ const applyOptimizationDefaults = (optimization, { production }) => {
  */
 const applyModuleDefaults = (
   module,
-  {
-    development,
-    babelEnv,
-    babelPlugins,
-    css,
-    fileOptions,
-    hotReplacementEnabled,
-    postcssPlugins,
-  },
+  { development, babelEnv, babelPlugins, css, fileOptions, postcssPlugins },
 ) => {
   D(module, 'rules', []);
   FF(module, 'rules', (rules) => {
     const preset = require('babel-preset');
     const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
-    const lessPluginGlob = require('less-plugin-glob');
 
     const getStyleLoaders = (cssOptions, preProcessor, preProcessorOptions) => {
       const cssSourceMap = css.inline != undefined ? !css.inline : development;
@@ -388,10 +403,9 @@ const applyModuleDefaults = (
               options: { injectType: 'singletonStyleTag' },
             }
           : {
-              loader: ExtractCssChunks.loader,
+              loader: MiniCssExtractPlugin.loader,
               options: {
                 publicPath: css.publicPath,
-                hmr: hotReplacementEnabled,
               },
             },
         {
@@ -401,15 +415,17 @@ const applyModuleDefaults = (
         {
           loader: require.resolve('postcss-loader'),
           options: {
-            ident: 'postcss',
-            plugins: [
-              require('postcss-flexbugs-fixes'),
-              require('postcss-preset-env')({
-                autoprefixer: { flexbox: 'no-2009' },
-                stage: 3,
-              }),
-              ...postcssPlugins,
-            ],
+            postcssOptions: {
+              ident: 'postcss',
+              plugins: [
+                require('postcss-flexbugs-fixes'),
+                require('postcss-preset-env')({
+                  autoprefixer: { flexbox: 'no-2009' },
+                  stage: 3,
+                }),
+                ...postcssPlugins,
+              ],
+            },
             sourceMap: cssSourceMap,
           },
         },
@@ -428,12 +444,6 @@ const applyModuleDefaults = (
     };
 
     const core = [
-      {
-        test: /\.ext$/,
-        use: {
-          loader: require.resolve('cache-loader'),
-        },
-      },
       {
         test: /\.(js|jsx|ts|tsx)$/,
         exclude: NODE_MODULES_REGEXP,
@@ -479,8 +489,8 @@ const applyModuleDefaults = (
           importLoaders: 1,
           modules: {
             getLocalIdent: getCSSModuleLocalIdent,
+            exportLocalsConvention: 'camelCase',
           },
-          localsConvention: 'camelCaseOnly',
         }),
       },
       {
@@ -492,8 +502,10 @@ const applyModuleDefaults = (
           },
           'less-loader',
           {
-            javascriptEnabled: true,
-            plugins: [lessPluginGlob],
+            lessOptions: {
+              javascriptEnabled: true,
+              // plugins: [],
+            },
           },
         ),
         sideEffects: true,
@@ -505,13 +517,15 @@ const applyModuleDefaults = (
             importLoaders: 2,
             modules: {
               getLocalIdent: getCSSModuleLocalIdent,
+              exportLocalsConvention: 'camelCase',
             },
-            localsConvention: 'camelCaseOnly',
           },
           'less-loader',
           {
-            javascriptEnabled: true,
-            plugins: [lessPluginGlob],
+            lessOptions: {
+              javascriptEnabled: true,
+              // plugins: [],
+            },
           },
         ),
       },
