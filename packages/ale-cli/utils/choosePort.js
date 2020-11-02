@@ -1,5 +1,5 @@
 const detect = require('detect-port');
-const getProcessForPort = require('react-dev-utils/getProcessForPort');
+const getProcessForPort = require('./getProcessForPort');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 const isRoot = require('is-root');
@@ -13,8 +13,8 @@ function choosePort(defaultPort) {
   }
 
   return detect(defaultPort).then(
-    port =>
-      new Promise(resolve => {
+    (port) =>
+      new Promise((resolve) => {
         if (port === defaultPort) {
           return resolve(port);
         }
@@ -37,7 +37,7 @@ function choosePort(defaultPort) {
             )}\n\nWould you like to run the app on another port instead?`,
             default: true,
           };
-          inquirer.prompt(question).then(answer => {
+          inquirer.prompt(question).then((answer) => {
             if (answer.shouldChangePort) {
               resolve(port);
             } else {
@@ -49,11 +49,12 @@ function choosePort(defaultPort) {
           resolve(null);
         }
       }),
-    err => {
+    (err) => {
       throw new Error(
         chalk.red(
-          `Could not find an open port.\nNetwork error message: ${err.message ||
-            err}\n`,
+          `Could not find an open port.\nNetwork error message: ${
+            err.message || err
+          }\n`,
         ),
       );
     },

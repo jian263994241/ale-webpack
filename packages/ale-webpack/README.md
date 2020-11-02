@@ -44,12 +44,9 @@ exports.default =  {
   optimization: {
     splitChunks: {
       cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          chunks: 'all',
-          name: 'vendor',
+        defaultVendors: {
+          test: /node_modules/,
           priority: -10,
-          enforce: true,
         },
       },
     },

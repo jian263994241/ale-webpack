@@ -6,7 +6,7 @@ const choosePort = require('../utils/choosePort');
 const clearConsole = require('../utils/clearConsole');
 const getUserConfig = require('../utils/getUserConfig');
 const log = require('../utils/log');
-const openBrowser = require('react-dev-utils/openBrowser');
+const openBrowser = require('../utils/openBrowser');
 const prepareUrls = require('../utils/prepareUrls');
 const setEnv = require('../utils/setEnv');
 
@@ -76,6 +76,7 @@ module.exports = function dev(media, opts) {
 
     compiler.hooks.done.tap('dev-server', (stats) => {
       if (stats.hasErrors()) {
+        console.log(stats);
         return;
       }
 
