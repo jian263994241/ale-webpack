@@ -35,7 +35,7 @@ package.json
 import path from 'path';
 import { version } from './package.json';
 
-export default {
+exports.default =  {
   entry: './src/app.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -91,7 +91,7 @@ export default {
   },
 };
 
-export const prod = {
+exports.prod = {
   output: {
     filename: 'res/j/app.[fullhash].js',
     chunkFilename: 'res/j/[id][chunkhash].js',
