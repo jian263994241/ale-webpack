@@ -1,6 +1,6 @@
 {
   "name": "ale-webpack",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Packs modules for browser",
   "main": "lib/index.js",
   "scripts": {},
@@ -38,7 +38,7 @@
     "terser-webpack-plugin": "^5.0.3",
     "webpack": "^5.3.2",
     "webpack-dev-server": "^3.11.0",
-    "webpackbar": "^4.0.0"
+    "webpackbar": "^5.0.0-3"
   },
   "directories": {
     "lib": "lib"
