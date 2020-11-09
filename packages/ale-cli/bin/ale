@@ -1,4 +1,4 @@
-#!/usr/bin/env node --trace-deprecation
+#!/usr/bin/env node
 
 const build = require('../lib/build');
 const dev = require('../lib/dev');
@@ -12,7 +12,6 @@ program
   .command('dev [media]')
   .description('编译文件, Default config file: .alerc.js')
   .option('-f, --file <filename>', 'Specify the file path of config file')
-  .option('-p, --print', 'print info')
   .option('--env <envConfig>', 'cross-env')
   .action(dev);
 

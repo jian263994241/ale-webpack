@@ -1,13 +1,15 @@
 const { unwatchConfigs, watchConfigs } = require('../utils/watch');
-const { debounce } = require('throttle-debounce');
 const { aleWebpack, WebpackDevServer } = require('ale-webpack');
-const chalk = require('chalk');
-const choosePort = require('../utils/choosePort');
-const clearConsole = require('../utils/clearConsole');
+const chalk = require('react-dev-utils/chalk');
+const clearConsole = require('react-dev-utils/clearConsole');
+const openBrowser = require('react-dev-utils/openBrowser');
+const printBuildError = require('react-dev-utils/printBuildError');
+const {
+  choosePort,
+  prepareUrls,
+} = require('react-dev-utils/WebpackDevServerUtils');
 const getUserConfig = require('../utils/getUserConfig');
 const log = require('../utils/log');
-const openBrowser = require('../utils/openBrowser');
-const prepareUrls = require('../utils/prepareUrls');
 const setEnv = require('../utils/setEnv');
 
 const isInteractive = process.stdout.isTTY;
@@ -20,18 +22,18 @@ const devStatus = {
   compiling: false,
 };
 
-const restart = debounce(300, (server, callback) => {
+const restart = (server, callback) => {
   if (devStatus.compiling) return;
   unwatchConfigs();
   server.close(callback);
-});
+};
 
-function wrapChoosePort(port) {
+function wrapChoosePort(host, defaultPort) {
   return new Promise((resolve) => {
     if (devStatus.isRestart && devStatus.innerPort) {
       resolve(devStatus.innerPort);
     } else {
-      choosePort(port).then((innerPort) => {
+      choosePort(host, defaultPort).then((innerPort) => {
         resolve(innerPort);
       });
     }
@@ -41,10 +43,6 @@ function wrapChoosePort(port) {
 module.exports = function dev(media, opts) {
   setEnv(opts.env);
 
-  if (opts.print) {
-    setEnv('CLEAR_CONSOLE=none');
-  }
-
   const compiler = aleWebpack(getUserConfig(opts.file, media));
 
   const options = compiler.options;
@@ -53,7 +51,7 @@ module.exports = function dev(media, opts) {
 
   const { port, host } = options.devServer;
 
-  wrapChoosePort(port).then((innerPort) => {
+  wrapChoosePort(host, port).then((innerPort) => {
     if (innerPort === null) {
       return;
     }
@@ -76,7 +74,6 @@ module.exports = function dev(media, opts) {
 
     compiler.hooks.done.tap('dev-server', (stats) => {
       if (stats.hasErrors()) {
-        console.log(stats);
         return;
       }
 
@@ -124,8 +121,7 @@ module.exports = function dev(media, opts) {
 
     server.listen(innerPort, host, (err) => {
       if (err) {
-        console.log(err);
-        return;
+        return printBuildError(err);
       }
       afterServer();
     });
