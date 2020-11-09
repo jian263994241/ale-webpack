@@ -8,6 +8,7 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackBar = require('webpackbar');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 
 const NODE_MODULES_REGEXP = /[\\/]node_modules[\\/]/i;
 const CSS_REGEXP = /\.css$/;
@@ -158,6 +159,11 @@ const applyWebpackOptionsDefaults = (options = {}) => {
     const plugins = [...userPlugins];
 
     applyPlugin(plugins, WebpackBar);
+    applyPlugin(
+      plugins,
+      WatchMissingNodeModulesPlugin,
+      path.resolve('node_modules'),
+    );
     applyPlugin(plugins, webpack.EnvironmentPlugin, {
       NODE_ENV: 'development',
       DEBUG: false,

@@ -1,7 +1,7 @@
-const chalk = require('chalk');
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
 const { applyWebpackOptionsDefaults } = require('./config/defaults');
+const printBuildError = require('react-dev-utils/printBuildError');
 
 exports.webpack = webpack;
 exports.WebpackDevServer = WebpackDevServer;
@@ -17,21 +17,28 @@ exports.aleWebpack = function aleWebpack(options, callback) {
 
   const compiler = webpack(options, callback);
 
-  compiler.hooks.done.tap('afterCompile', (stats) => {
-    if (stats.hasErrors()) {
+  compiler.hooks.done.tap('done', (stats) => {
+    const statsData = stats.toJson({
+      all: false,
+      warnings: true,
+      errors: true,
+    });
+
+    if (statsData.warnings.length) {
+      if (statsData.warnings) {
+        statsData.warnings.forEach((e) => console.log(e));
+      }
+    }
+
+    if (statsData.errors.length) {
       // make sound
       // ref: https://github.com/JannesMeyer/system-bell-webpack-plugin/blob/bb35caf/SystemBellPlugin.js#L14
       if (process.env.SYSTEM_BELL !== 'none') {
         process.stdout.write('\x07');
       }
 
-      if (
-        stats.compilation &&
-        stats.compilation.errors &&
-        stats.compilation.errors.length > 0
-      ) {
-        const errInfo = stats.compilation.errors[0];
-        console.error(chalk.redBright(errInfo));
+      if (statsData.errors) {
+        statsData.errors.forEach((e) => printBuildError(e));
       }
     }
   });
