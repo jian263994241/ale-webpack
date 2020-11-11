@@ -96,7 +96,7 @@ exports.default =  {
 exports.prod = {
   output: {
     filename: 'res/j/app.[fullhash].js',
-    chunkFilename: 'res/j/[id][chunkhash].js',
+    chunkFilename: 'res/j/chunk.[chunkhash].js',
     publicPath: 'https://img.99bill.com/',
   },
   mode: 'production',
@@ -105,8 +105,8 @@ exports.prod = {
       filename: 'seashell/webapp/xxxxx/default.html',
     },
     css: {
-      filename: 'res/c/[fullhash].css',
-      chunkFilename: 'res/c/[chunkhash].chunk.css',
+      filename: 'res/c/style.[fullhash].css',
+      chunkFilename: 'res/c/chunk.[chunkhash].css',
     },
     fileOptions: {
       outputPath: 'res/i',
