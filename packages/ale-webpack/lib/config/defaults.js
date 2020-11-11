@@ -225,12 +225,9 @@ const applyWebpackOptionsDefaults = (options = {}) => {
                 source: options.output.path,
                 destination: path.join(
                   options.output.path,
-                  ale.zip.filename ||
-                    path.basename(process.cwd()) +
-                      new Date()
-                        .toLocaleString(undefined, { hour12: false })
-                        .replace(/\//g, '-') +
-                      '.zip',
+                  typeof ale.zip.filename == 'string'
+                    ? ale.zip.filename
+                    : path.basename(process.cwd()) + '_' + Date.now() + '.zip',
                 ),
               },
             ],

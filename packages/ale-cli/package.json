@@ -1,6 +1,6 @@
 {
   "name": "ale-cli",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "bin": {
     "ale": "bin/ale"
   },
@@ -16,7 +16,7 @@
   "author": "jianl",
   "license": "MIT",
   "dependencies": {
-    "ale-webpack": "^3.0.4",
+    "ale-webpack": "^3.0.5",
     "chokidar": "^3.4.3",
     "commander": "^5.1.0",
     "deepmerge": "^4.2.2",
