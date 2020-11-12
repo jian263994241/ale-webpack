@@ -26,7 +26,7 @@ exports.aleWebpack = function aleWebpack(options, callback) {
 
     if (statsData.warnings.length) {
       if (statsData.warnings) {
-        statsData.warnings.forEach((e) => console.log(e));
+        statsData.warnings.forEach((e) => printBuildError(e));
       }
     }
 
