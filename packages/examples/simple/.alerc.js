@@ -1,14 +1,9 @@
 module.exports = {
-  entry: './app.js',
+  entry: './src/app.js',
   output: {
     publicPath: '/',
   },
   devServer: {
     port: 8000,
-  },
-  ale: {
-    html: {
-      title: 'Example',
-    },
   },
 };

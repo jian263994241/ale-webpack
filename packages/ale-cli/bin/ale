@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --trace-deprecation
 
 const build = require('../lib/build');
 const dev = require('../lib/dev');

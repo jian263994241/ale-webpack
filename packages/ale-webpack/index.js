@@ -1,6 +1,6 @@
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
-const { applyWebpackOptionsDefaults } = require('./config/defaults');
+const applyWebpackOptionsDefaults = require('./config/applyWebpackOptionsDefaults');
 const printBuildError = require('react-dev-utils/printBuildError');
 
 exports.webpack = webpack;
