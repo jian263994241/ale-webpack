@@ -4,5 +4,6 @@
     "packages/examples/*"
   ],
   "npmClient": "yarn",
-  "version": "independent"
+  "version": "independent",
+  "useWorkspaces": true
 }

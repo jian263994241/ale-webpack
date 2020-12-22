@@ -2,7 +2,6 @@
   "name": "simple",
   "version": "1.0.0",
   "description": "",
-  "main": "src/app.js",
   "scripts": {
     "dev": "../../ale-cli/bin/ale dev",
     "build": "../../ale-cli/bin/ale build"

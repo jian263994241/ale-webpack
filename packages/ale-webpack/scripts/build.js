@@ -22,10 +22,11 @@ const webpack = require('webpack');
 const configFactory = require('../config/applyWebpackOptionsDefaults');
 const paths = require('../config/paths');
 const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
-const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
 const printHostingInstructions = require('react-dev-utils/printHostingInstructions');
 const FileSizeReporter = require('react-dev-utils/FileSizeReporter');
 const printBuildError = require('react-dev-utils/printBuildError');
+// const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
+const formatWebpackMessages = require('../utils/formatWebpackMessages');
 
 const measureFileSizesBeforeBuild =
   FileSizeReporter.measureFileSizesBeforeBuild;
@@ -38,7 +39,7 @@ const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024;
 
 const isInteractive = process.stdout.isTTY;
 
-module.exports = function run(webpackConfig = {}){
+module.exports = function run(webpackConfig = {}) {
   // Warn and crash if required files are missing
   if (
     !checkRequiredFiles(
@@ -55,8 +56,6 @@ module.exports = function run(webpackConfig = {}){
 
   // Generate configuration
   const config = configFactory(webpackConfig);
-
-
 
   // We require that you explicitly set browsers and do not fall back to
   // browserslist defaults.
@@ -211,13 +210,11 @@ module.exports = function run(webpackConfig = {}){
       });
     });
   }
+};
 
-  function copyPublicFolder() {
-    fs.copySync(paths.appPublic, paths.appBuild, {
-      dereference: true,
-      filter: (file) => file !== paths.appHtml,
-    });
-  }
-
+function copyPublicFolder() {
+  fs.copySync(paths.appPublic, paths.appBuild, {
+    dereference: true,
+    filter: (file) => file !== paths.appHtml,
+  });
 }
-

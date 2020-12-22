@@ -60,10 +60,8 @@ const swSrc = paths.swSrc;
 // style files regexes
 const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
-const lessRegex = /\.less$/;
-const lessModuleRegex = /\.module\.less$/;
-// const sassRegex = /\.(scss|sass)$/;
-// const sassModuleRegex = /\.module\.(scss|sass)$/;
+const sassRegex = /\.(scss|sass)$/;
+const sassModuleRegex = /\.module\.(scss|sass)$/;
 
 const NODE_MODULES_REGEXP = /[\\/]node_modules[\\/]/i;
 
@@ -180,7 +178,7 @@ const applyWebpackOptionsDefaults = (options = {}) => {
   const shouldUseReactRefresh = env.raw.FAST_REFRESH;
 
   // common function to get style loaders
-  const getStyleLoaders = (cssOptions, preProcessor, preProcessorOptions) => {
+  const getStyleLoaders = (cssOptions, preProcessor) => {
     const loaders = [
       isEnvDevelopment && require.resolve('style-loader'),
       isEnvProduction && {
@@ -234,7 +232,6 @@ const applyWebpackOptionsDefaults = (options = {}) => {
           loader: require.resolve(preProcessor),
           options: {
             sourceMap: true,
-            ...preProcessorOptions,
           },
         },
       );
@@ -242,7 +239,9 @@ const applyWebpackOptionsDefaults = (options = {}) => {
     return loaders;
   };
 
-  FF(options, 'mode', () =>
+  D(
+    options,
+    'mode',
     isEnvProduction ? 'production' : isEnvDevelopment && 'development',
   );
 
@@ -257,15 +256,15 @@ const applyWebpackOptionsDefaults = (options = {}) => {
         : false
       : isEnvDevelopment && 'cheap-module-source-map',
   );
-  FF(options, 'entry', (userEntry) => {
-    const entry = userEntry || appPackageJson.main || paths.appIndexJs;
-
+  FF(options, 'entry', () => {
+    //ignore user entry
     return isEnvDevelopment && !shouldUseReactRefresh
-      ? prependEntry(entry)
-      : entry;
+      ? [webpackDevClientEntry, paths.appIndexJs]
+      : paths.appIndexJs;
   });
 
-  FF(options, 'output', (userOutput) => {
+  FF(options, 'output', () => {
+    //ignore user output
     return {
       // The build folder.
       path: paths.appBuild,
@@ -298,7 +297,6 @@ const applyWebpackOptionsDefaults = (options = {}) => {
       // this defaults to 'window', but by setting it to 'this' then
       // module chunks which are built will work in web workers as well.
       globalObject: 'this',
-      ...userOutput,
     };
   });
 
@@ -347,21 +345,9 @@ const applyWebpackOptionsDefaults = (options = {}) => {
       },
     }),
     // This is only used in production mode
-    new OptimizeCSSAssetsPlugin({
-      cssProcessorOptions: {
-        parser: safePostCssParser,
-        map: shouldUseSourceMap
-          ? {
-              // `inline: false` forces the sourcemap to be output into a
-              // separate file
-              inline: false,
-              // `annotation: true` appends the sourceMappingURL to the end of
-              // the css file, helping the browser find the sourcemap
-              annotation: true,
-            }
-          : false,
-      },
-      cssProcessorPluginOptions: {
+    new CssMinimizerPlugin({
+      sourceMap: shouldUseSourceMap,
+      minimizerOptions: {
         preset: ['default', { minifyFontValues: { removeQuotes: false } }],
       },
     }),
@@ -549,41 +535,38 @@ const applyWebpackOptionsDefaults = (options = {}) => {
           },
         }),
       },
-
+      // Opt-in support for SASS (using .scss or .sass extensions).
+      // By default we support SASS Modules with the
+      // extensions .module.scss or .module.sass
       {
-        test: lessRegex,
-        exclude: lessModuleRegex,
+        test: sassRegex,
+        exclude: sassModuleRegex,
         use: getStyleLoaders(
           {
-            importLoaders: 2,
+            importLoaders: 3,
             sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
           },
-          'less-loader',
-          {
-            lessOptions: {
-              javascriptEnabled: true,
-            },
-          },
+          'sass-loader',
         ),
+        // Don't consider CSS imports dead code even if the
+        // containing package claims to have no side effects.
+        // Remove this when webpack adds a warning or an error for this.
+        // See https://github.com/webpack/webpack/issues/6571
         sideEffects: true,
       },
+      // Adds support for CSS Modules, but using SASS
+      // using the extension .module.scss or .module.sass
       {
-        test: lessModuleRegex,
+        test: sassModuleRegex,
         use: getStyleLoaders(
           {
-            importLoaders: 2,
+            importLoaders: 3,
             sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
             modules: {
               getLocalIdent: getCSSModuleLocalIdent,
-              exportLocalsConvention: 'camelCase',
             },
           },
-          'less-loader',
-          {
-            lessOptions: {
-              javascriptEnabled: true,
-            },
-          },
+          'sass-loader',
         ),
       },
       // "file" loader makes sure those assets get served by WebpackDevServer.
@@ -688,6 +671,7 @@ const applyWebpackOptionsDefaults = (options = {}) => {
           // both options are optional
           filename: 'static/css/[name].[contenthash:8].css',
           chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
+          ignoreOrder: true,
         }),
       // Generate an asset manifest file with the following content:
       // - "files" key: Mapping of all asset filenames to their corresponding

@@ -6,9 +6,9 @@ const setEnv = require('../utils/setEnv');
 module.exports = function build(media, opts) {
   // setEnv(opts.env);
 
-  const userWebpackConfig = getUserConfig(opts.file, media);
+  // const userWebpackConfig = getUserConfig(opts.file, media);
 
-  require('ale-webpack/scripts/build')(userWebpackConfig);
+  require('ale-webpack/scripts/build')();
 
   // //默认mode: development
   // if (options.mode === undefined) {
