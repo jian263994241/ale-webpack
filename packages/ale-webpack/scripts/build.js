@@ -41,13 +41,7 @@ const isInteractive = process.stdout.isTTY;
 
 module.exports = function run(webpackConfig = {}) {
   // Warn and crash if required files are missing
-  if (
-    !checkRequiredFiles(
-      [paths.appHtml, !webpackConfig.entry ? paths.appIndexJs : false].filter(
-        Boolean,
-      ),
-    )
-  ) {
+  if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs].filter(Boolean))) {
     process.exit(1);
   }
 
@@ -144,6 +138,7 @@ module.exports = function run(webpackConfig = {}) {
     console.log('Creating an optimized production build...');
 
     const compiler = webpack(config);
+
     return new Promise((resolve, reject) => {
       compiler.run((err, stats) => {
         let messages;

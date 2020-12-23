@@ -9,21 +9,4 @@ module.exports = function build(media, opts) {
   // const userWebpackConfig = getUserConfig(opts.file, media);
 
   require('ale-webpack/scripts/build')();
-
-  // //默认mode: development
-  // if (options.mode === undefined) {
-  //   options.mode = 'production';
-  // }
-
-  // const compiler = aleWebpack(options);
-
-  // compiler.run((err, stats) => {
-  //   if (err) {
-  //     log.error(err.stack || err);
-  //     if (err.details) {
-  //       log.error(err.details);
-  //     }
-  //     return;
-  //   }
-  // });
 };

@@ -18,11 +18,8 @@ const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeM
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
-const WebpackBar = require('webpackbar');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
@@ -37,9 +34,7 @@ const appPackageJson = require(paths.appPackageJson);
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 
-const webpackDevClientEntry = require.resolve(
-  'react-dev-utils/webpackHotDevClient',
-);
+const webpackDevClientEntry = require.resolve('../utils/webpackHotDevClient');
 const reactRefreshOverlayEntry = require.resolve(
   'react-dev-utils/refreshOverlayInterop',
 );
@@ -201,20 +196,23 @@ const applyWebpackOptionsDefaults = (options = {}) => {
         options: {
           // Necessary for external CSS imports to work
           // https://github.com/facebook/create-react-app/issues/2677
-          ident: 'postcss',
-          plugins: () => [
-            require('postcss-flexbugs-fixes'),
-            require('postcss-preset-env')({
-              autoprefixer: {
-                flexbox: 'no-2009',
-              },
-              stage: 3,
-            }),
-            // Adds PostCSS Normalize as the reset css with default options,
-            // so that it honors browserslist config in package.json
-            // which in turn let's users customize the target behavior as per their needs.
-            postcssNormalize(),
-          ],
+          postcssOptions: {
+            ident: 'postcss',
+            parser: safePostCssParser,
+            plugins: () => [
+              require('postcss-flexbugs-fixes'),
+              require('postcss-preset-env')({
+                autoprefixer: {
+                  flexbox: 'no-2009',
+                },
+                stage: 3,
+              }),
+              // Adds PostCSS Normalize as the reset css with default options,
+              // so that it honors browserslist config in package.json
+              // which in turn let's users customize the target behavior as per their needs.
+              postcssNormalize(),
+            ],
+          },
           sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
         },
       },
@@ -273,11 +271,11 @@ const applyWebpackOptionsDefaults = (options = {}) => {
       // In development, it does not produce real files.
       filename: isEnvProduction
         ? 'static/js/[name].[contenthash:8].js'
-        : isEnvDevelopment && 'static/js/bundle.js',
+        : 'static/js/[name].bundle.js',
       // There are also additional JS chunk files if you use code splitting.
       chunkFilename: isEnvProduction
         ? 'static/js/[name].[contenthash:8].chunk.js'
-        : isEnvDevelopment && 'static/js/[name].chunk.js',
+        : 'static/js/[name].chunk.js',
       // webpack uses `publicPath` to determine where the app is being served from.
       // It requires a trailing slash, or the file assets will get an incorrect path.
       // We inferred the "public path" (such as / or /my-project) from homepage.
@@ -361,6 +359,18 @@ const applyWebpackOptionsDefaults = (options = {}) => {
   });
 
   D(options, 'resolve', {});
+  FF(options.resolve, 'alias', (alias) => ({
+    // Support React Native Web
+    // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
+    'react-native': 'react-native-web',
+    // Allows for better profiling with ReactDevTools
+    ...(isEnvProductionProfile && {
+      'react-dom$': 'react-dom/profiling',
+      'scheduler/tracing': 'scheduler/tracing-profiling',
+    }),
+    ...(modules.webpackAliases || {}),
+    ...alias,
+  }));
   D(
     options.resolve,
     'modules',
@@ -386,10 +396,11 @@ const applyWebpackOptionsDefaults = (options = {}) => {
       // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
-      new ModuleScopePlugin(paths.appSrc, [
-        paths.appPackageJson,
-        reactRefreshOverlayEntry,
-      ]),
+
+      // new ModuleScopePlugin(paths.appSrc, [
+      //   paths.appPackageJson,
+      //   reactRefreshOverlayEntry,
+      // ]),
       ...userResolvePlugins,
     ];
   });
@@ -414,11 +425,13 @@ const applyWebpackOptionsDefaults = (options = {}) => {
       // https://github.com/jshttp/mime-db
       {
         test: [/\.avif$/],
-        loader: require.resolve('url-loader'),
-        options: {
-          limit: imageInlineSizeLimit,
-          mimetype: 'image/avif',
-          name: 'static/media/[name].[hash:8].[ext]',
+        use: {
+          loader: require.resolve('url-loader'),
+          options: {
+            limit: imageInlineSizeLimit,
+            mimetype: 'image/avif',
+            name: 'static/media/[name].[hash:8].[ext]',
+          },
         },
       },
       // "url" loader works like "file" loader except that it embeds assets
@@ -426,10 +439,12 @@ const applyWebpackOptionsDefaults = (options = {}) => {
       // A missing `test` is equivalent to a match.
       {
         test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
-        loader: require.resolve('url-loader'),
-        options: {
-          limit: imageInlineSizeLimit,
-          name: 'static/media/[name].[hash:8].[ext]',
+        use: {
+          loader: require.resolve('url-loader'),
+          options: {
+            limit: imageInlineSizeLimit,
+            name: 'static/media/[name].[hash:8].[ext]',
+          },
         },
       },
       // Process application JS with Babel.
@@ -437,43 +452,44 @@ const applyWebpackOptionsDefaults = (options = {}) => {
       {
         test: /\.(js|mjs|jsx|ts|tsx)$/,
         include: paths.appSrc,
-        loader: require.resolve('babel-loader'),
-        options: {
-          customize: require.resolve(
-            'babel-preset-react-app/webpack-overrides',
-          ),
-          presets: [
-            [
-              require.resolve('babel-preset-react-app'),
-              {
-                runtime: hasJsxRuntime ? 'automatic' : 'classic',
-              },
+        use: {
+          loader: require.resolve('babel-loader'),
+          options: {
+            customize: require.resolve(
+              'babel-preset-react-app/webpack-overrides',
+            ),
+            presets: [
+              [
+                require.resolve('babel-preset-react-app'),
+                {
+                  runtime: hasJsxRuntime ? 'automatic' : 'classic',
+                },
+              ],
             ],
-          ],
-
-          plugins: [
-            [
-              require.resolve('babel-plugin-named-asset-import'),
-              {
-                loaderMap: {
-                  svg: {
-                    ReactComponent:
-                      '@svgr/webpack?-svgo,+titleProp,+ref![path]',
+            plugins: [
+              [
+                require.resolve('babel-plugin-named-asset-import'),
+                {
+                  loaderMap: {
+                    svg: {
+                      ReactComponent:
+                        '@svgr/webpack?-svgo,+titleProp,+ref![path]',
+                    },
                   },
                 },
-              },
-            ],
-            isEnvDevelopment &&
-              shouldUseReactRefresh &&
-              require.resolve('react-refresh/babel'),
-          ].filter(Boolean),
-          // This is a feature of `babel-loader` for webpack (not Babel itself).
-          // It enables caching results in ./node_modules/.cache/babel-loader/
-          // directory for faster rebuilds.
-          cacheDirectory: true,
-          // See #6846 for context on why cacheCompression is disabled
-          cacheCompression: false,
-          compact: isEnvProduction,
+              ],
+              isEnvDevelopment &&
+                shouldUseReactRefresh &&
+                require.resolve('react-refresh/babel'),
+            ].filter(Boolean),
+            // This is a feature of `babel-loader` for webpack (not Babel itself).
+            // It enables caching results in ./node_modules/.cache/babel-loader/
+            // directory for faster rebuilds.
+            cacheDirectory: true,
+            // See #6846 for context on why cacheCompression is disabled
+            cacheCompression: false,
+            compact: isEnvProduction,
+          },
         },
       },
       // Process any JS outside of the app with Babel.
@@ -481,26 +497,28 @@ const applyWebpackOptionsDefaults = (options = {}) => {
       {
         test: /\.(js|mjs)$/,
         exclude: /@babel(?:\/|\\{1,2})runtime/,
-        loader: require.resolve('babel-loader'),
-        options: {
-          babelrc: false,
-          configFile: false,
-          compact: false,
-          presets: [
-            [
-              require.resolve('babel-preset-react-app/dependencies'),
-              { helpers: true },
+        use: {
+          loader: require.resolve('babel-loader'),
+          options: {
+            babelrc: false,
+            configFile: false,
+            compact: false,
+            presets: [
+              [
+                require.resolve('babel-preset-react-app/dependencies'),
+                { helpers: true },
+              ],
             ],
-          ],
-          cacheDirectory: true,
-          // See #6846 for context on why cacheCompression is disabled
-          cacheCompression: false,
+            cacheDirectory: true,
+            // See #6846 for context on why cacheCompression is disabled
+            cacheCompression: false,
 
-          // Babel sourcemaps are needed for debugging into node_modules
-          // code.  Without the options below, debuggers like VSCode
-          // show incorrect code and set breakpoints on the wrong lines.
-          sourceMaps: shouldUseSourceMap,
-          inputSourceMap: shouldUseSourceMap,
+            // Babel sourcemaps are needed for debugging into node_modules
+            // code.  Without the options below, debuggers like VSCode
+            // show incorrect code and set breakpoints on the wrong lines.
+            sourceMaps: shouldUseSourceMap,
+            inputSourceMap: shouldUseSourceMap,
+          },
         },
       },
       // "postcss" loader applies autoprefixer to our CSS.
@@ -580,7 +598,12 @@ const applyWebpackOptionsDefaults = (options = {}) => {
         // its runtime that would otherwise be processed through "file" loader.
         // Also exclude `html` and `json` extensions so they get processed
         // by webpacks internal loaders.
-        exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
+        exclude: [
+          /\.(js|mjs|jsx|ts|tsx)$/,
+          /\.html$/,
+          /\.json$/,
+          /\.(less|sass|scss|config|variables|overrides)$/,
+        ],
         options: {
           name: 'static/media/[name].[hash:8].[ext]',
         },
@@ -766,6 +789,28 @@ const applyWebpackOptionsDefaults = (options = {}) => {
           },
         },
       }),
+
+      isEnvProduction &&
+        new FileManagerPlugin({
+          events: {
+            onEnd: {
+              archive: [
+                {
+                  source: options.output.path,
+                  destination: path.join(
+                    options.output.path,
+                    typeof ale.zip.filename == 'string'
+                      ? ale.zip.filename
+                      : path.basename(process.cwd()) +
+                          '_' +
+                          Date.now() +
+                          '.zip',
+                  ),
+                },
+              ],
+            },
+          },
+        }),
       ...userPlugins,
     ].filter(Boolean);
   });
@@ -955,10 +1000,15 @@ const applyAleDefaults = (ale, { development, publicPath }) => {
  */
 const applyWebpackResolveDefaults = (resolve) => {
   FF(resolve, 'alias', (alias) => ({
-    '@babel/runtime': path.dirname(
-      require.resolve('@babel/runtime/package.json'),
-    ),
-    '~': path.join(process.cwd(), 'src'),
+    // Support React Native Web
+    // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
+    'react-native': 'react-native-web',
+    // Allows for better profiling with ReactDevTools
+    ...(isEnvProductionProfile && {
+      'react-dom$': 'react-dom/profiling',
+      'scheduler/tracing': 'scheduler/tracing-profiling',
+    }),
+    ...(modules.webpackAliases || {}),
     ...alias,
   }));
 

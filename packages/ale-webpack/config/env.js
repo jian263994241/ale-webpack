@@ -100,6 +100,7 @@ function getClientEnvironment(publicUrl) {
       env[key] = JSON.stringify(raw[key]);
       return env;
     }, {}),
+    'process.platform': 'window.navigator.platform',
   };
 
   return { raw, stringified };
