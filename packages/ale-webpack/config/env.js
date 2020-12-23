@@ -12,7 +12,7 @@ delete require.cache[require.resolve('./paths')];
 async function readEnvFiles(options) {
   const { verbose, noOverride, local, environments = [] } = options || {};
 
-  let env = {},
+  let env,
     envVarsOpts = {
       verbose,
       envFile: {
@@ -26,7 +26,7 @@ async function readEnvFiles(options) {
   try {
     env = await GetEnvVars(envVarsOpts);
   } catch (error) {
-    // printErrors(error);
+    env = {};
   }
 
   if (noOverride === true) {
@@ -100,6 +100,8 @@ function getClientEnvironment(publicUrl) {
         // which is why it's disabled by default.
         // It is defined here so it is available in the webpackHotDevClient.
         FAST_REFRESH: process.env.FAST_REFRESH !== 'false',
+
+        OUTPUT_PATH_PREFIX: process.env.OUTPUT_PATH_PREFIX || '',
       },
     );
   // Stringify all values so we can feed into webpack DefinePlugin
@@ -108,7 +110,7 @@ function getClientEnvironment(publicUrl) {
       env[key] = JSON.stringify(raw[key]);
       return env;
     }, {}),
-    'process.platform': 'window.navigator.platform',
+    'process.platform': JSON.stringify(process.platform),
   };
 
   return { raw, stringified };

@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "../../ale-cli/bin/ale dev",
-    "build": "../../ale-cli/bin/ale build"
+    "dev": "../../ale-cli/bin/ale dev --env dev",
+    "build": "../../ale-cli/bin/ale build --env-local dev"
   },
   "author": "",
   "license": "ISC",

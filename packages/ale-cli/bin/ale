@@ -1,27 +1,56 @@
-#!/usr/bin/env node --trace-deprecation
+#!/usr/bin/env node
 
-const build = require('../lib/build');
-const dev = require('../lib/dev');
-const info = require('../lib/info');
-const { version } = require('../package.json');
+const { build, start } = require('ale-webpack');
+
+const { version } = require('ale-webpack/package.json');
 const { program } = require('commander');
 
 program.version(version);
 
 program
-  .command('dev [media]')
-  .description('编译文件, Default config file: .alerc.js')
-  .option('-f, --file <filename>', 'Specify the file path of config file')
-  .option('--env <envConfig>', 'cross-env')
-  .action(dev);
+  .option(
+    '--env <environments>',
+    '选择 .env-cmdrc.json 中的环境变量, 多个用逗号隔开',
+  )
+  .option('--env-local <local>', '指定 .env.local 覆盖 .env')
+  .option('--verbose');
 
 program
-  .command('build [media]')
-  .description('编译文件, 默认配置: ale.config.js')
-  .option('-f, --file <filename>', 'specify the file path of `ale.config.js`')
-  .option('--env <envConfig>', 'cross-env')
-  .action(build);
+  .command('dev')
+  .description('开发工具')
+  .action(() => {
+    let environments;
 
-program.command('info').description('信息').action(info);
+    if (program.env) {
+      environments = program.env.split(',');
+    }
+
+    return start({
+      envOptions: {
+        environments,
+        local: program.envLocal,
+        verbose: program.verbose,
+      },
+    });
+  });
+
+program
+  .command('build')
+  .description('打包工具')
+  .action(() => {
+    let environments;
+
+    if (program.env) {
+      environments = program.env.split(',');
+    }
+
+    return build({
+      envOptions: {
+        environments,
+        local: program.envLocal,
+        verbose: program.verbose,
+      },
+    });
+  });
 
 program.parse(process.argv);

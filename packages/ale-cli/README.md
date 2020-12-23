@@ -5,12 +5,10 @@ CLI for ale-webpack.
 ## 安装
 
 ```
-npm install ale-cli -D
+npm install ale-cli -D 
 
 ```
 
-## 配置
+## 文档
 
-配置文件: `.alerc.js`,
-
-- [ale-webpack](https://github.com/jian263994241/ale-webpack/blob/master/packages/ale-webpack/README.md)
+- [doc](https://github.com/jian263994241/ale-webpack/blob/master/packages/ale-webpack/README.md)

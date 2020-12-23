@@ -10,7 +10,7 @@ const address = require('address');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
-const chalk = require('chalk');
+const chalk = require('react-dev-utils/chalk');
 const detect = require('detect-port-alt');
 const isRoot = require('is-root');
 const prompts = require('prompts');
@@ -19,6 +19,7 @@ const formatWebpackMessages = require('./formatWebpackMessages');
 const getProcessForPort = require('react-dev-utils/getProcessForPort');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
 const forkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
+const printError = require('./printError');
 
 const isInteractive = process.stdout.isTTY;
 
@@ -118,9 +119,7 @@ function createCompiler({
     compiler = webpack(config);
   } catch (err) {
     console.log(chalk.red('Failed to compile.'));
-    console.log();
-    console.log(err.message || err);
-    console.log();
+    printError(err);
     process.exit(1);
   }
 
@@ -240,7 +239,7 @@ function createCompiler({
         messages.errors.length = 1;
       }
       console.log(chalk.red('Failed to compile.\n'));
-      console.log(messages.errors.join('\n\n'));
+      printError(messages.errors.join('\n\n'));
       return;
     }
 
