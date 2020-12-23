@@ -29,7 +29,7 @@ const semver = require('semver');
 const paths = require('../config/paths');
 const configFactory = require('../config/applyWebpackOptionsDefaults');
 const createDevServerConfig = require('../config/webpackDevServer.config');
-const getClientEnvironment = require('../config/env');
+const { getClientEnvironment } = require('../config/env');
 const react = require(require.resolve('react', { paths: [paths.appPath] }));
 
 const env = getClientEnvironment(paths.publicUrlOrPath.slice(0, -1));
@@ -77,7 +77,13 @@ checkBrowsers(paths.appPath, isInteractive)
       return;
     }
 
-    const config = configFactory();
+    let webpackConfigOverrides;
+
+    if (fs.existsSync(paths.webpackConfig)) {
+      webpackConfigOverrides = require(paths.webpackConfig);
+    }
+
+    const config = configFactory(webpackConfigOverrides);
 
     const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
     const appName = require(paths.appPackageJson).name;

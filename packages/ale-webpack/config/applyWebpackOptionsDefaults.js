@@ -10,7 +10,6 @@ const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
-const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
@@ -25,7 +24,7 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 
 const paths = require('./paths');
 const modules = require('./modules');
-const getClientEnvironment = require('./env');
+const { getClientEnvironment } = require('./env');
 const postcssNormalize = require('postcss-normalize');
 const safePostCssParser = require('postcss-safe-parser');
 
@@ -391,16 +390,6 @@ const applyWebpackOptionsDefaults = (options = {}) => {
       // Adds support for installing with Plug'n'Play, leading to faster installs and adding
       // guards against forgotten dependencies and such.
       PnpWebpackPlugin,
-      // Prevents users from importing files from outside of src/ (or node_modules/).
-      // This often causes confusion because we only process files within src/ with babel.
-      // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
-      // please link the files into your node_modules/ and let module-resolution kick in.
-      // Make sure your source files are compiled, as they will not be processed in any way.
-
-      // new ModuleScopePlugin(paths.appSrc, [
-      //   paths.appPackageJson,
-      //   reactRefreshOverlayEntry,
-      // ]),
       ...userResolvePlugins,
     ];
   });
@@ -799,12 +788,7 @@ const applyWebpackOptionsDefaults = (options = {}) => {
                   source: options.output.path,
                   destination: path.join(
                     options.output.path,
-                    typeof ale.zip.filename == 'string'
-                      ? ale.zip.filename
-                      : path.basename(process.cwd()) +
-                          '_' +
-                          Date.now() +
-                          '.zip',
+                    appPackageJson.name + '@' + appPackageJson.version + '.zip',
                   ),
                 },
               ],

@@ -8,5 +8,5 @@ module.exports = function build(media, opts) {
 
   // const userWebpackConfig = getUserConfig(opts.file, media);
 
-  require('ale-webpack/scripts/build')();
+  require('ale-webpack/scripts/build');
 };
