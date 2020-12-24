@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { build, start } = require('ale-webpack');
+const { build, start, test } = require('ale-webpack');
 
 const { version } = require('ale-webpack/package.json');
 const { program } = require('commander');
@@ -26,10 +26,10 @@ program
     }
 
     return start({
+      verbose: program.verbose,
       envOptions: {
         environments,
         local: program.envLocal,
-        verbose: program.verbose,
       },
     });
   });
@@ -45,10 +45,29 @@ program
     }
 
     return build({
+      verbose: program.verbose,
       envOptions: {
         environments,
         local: program.envLocal,
-        verbose: program.verbose,
+      },
+    });
+  });
+
+program
+  .command('test')
+  .description('测试工具 jest')
+  .action(() => {
+    let environments;
+
+    if (program.env) {
+      environments = program.env.split(',');
+    }
+
+    return test({
+      verbose: program.verbose,
+      envOptions: {
+        environments,
+        local: program.envLocal,
       },
     });
   });

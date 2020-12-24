@@ -27,14 +27,14 @@ const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
 const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024;
 
 async function build(options = {}) {
-  const { envOptions } = options;
+  const { envOptions, verbose } = options;
 
   // Do this as the first thing so that any code reading it knows the right env.
   process.env.BABEL_ENV = 'production';
   process.env.NODE_ENV = 'production';
 
   // Ensure environment variables are read.
-  await readEnvFiles(envOptions);
+  await readEnvFiles({ ...envOptions, verbose });
 
   const measureFileSizesBeforeBuild =
     FileSizeReporter.measureFileSizesBeforeBuild;
