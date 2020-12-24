@@ -5,10 +5,23 @@ CLI for ale-webpack.
 ## 安装
 
 ```
-npm install ale-cli -D 
+npm install ale-cli -D
 
 ```
 
-## 文档
+Add scripts to package.json
 
-- [doc](https://github.com/jian263994241/ale-webpack/blob/master/packages/ale-webpack/README.md)
+```json
+
+{
+  "scripts": {
+    "start": "ale start",
+    "build": "ale build",
+    "test": "ale test",
+  }
+}
+
+```
+
+
+npm start or  yarn start

@@ -1,6 +1,6 @@
 {
   "name": "ale-cli",
-  "version": "4.0.0",
+  "version": "4.0.0-1",
   "bin": {
     "ale": "bin/ale"
   },
@@ -14,7 +14,7 @@
   "author": "jianl",
   "license": "MIT",
   "dependencies": {
-    "ale-webpack": "^3.0.5",
+    "ale-webpack": "^4.0.0-0",
     "commander": "^6.2.1"
   },
   "repository": {

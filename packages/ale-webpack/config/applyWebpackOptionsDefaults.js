@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
+const resolve = require('resolve');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
@@ -25,7 +26,6 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 const paths = require('./paths');
 const modules = require('./modules');
 const { getClientEnvironment } = require('./env');
-const postcssNormalize = require('postcss-normalize');
 const safePostCssParser = require('postcss-safe-parser');
 
 const webpackDevClientEntry = require.resolve('../utils/webpackHotDevClient');
@@ -167,10 +167,6 @@ const applyWebpackOptionsDefaults = (options = {}) => {
                 },
                 stage: 3,
               }),
-              // Adds PostCSS Normalize as the reset css with default options,
-              // so that it honors browserslist config in package.json
-              // which in turn let's users customize the target behavior as per their needs.
-              postcssNormalize(),
             ],
           },
           sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
@@ -214,14 +210,15 @@ const applyWebpackOptionsDefaults = (options = {}) => {
         : false
       : isEnvDevelopment && 'cheap-module-source-map',
   );
-  FF(options, 'entry', () => {
+
+  F(options, 'entry', () => {
     //ignore user entry
     return isEnvDevelopment && !shouldUseReactRefresh
       ? [webpackDevClientEntry, paths.appIndexJs]
       : paths.appIndexJs;
   });
 
-  FF(options, 'output', () => {
+  FF(options, 'output', (userOutput) => {
     //ignore user output
     return {
       // The build folder.
@@ -260,7 +257,8 @@ const applyWebpackOptionsDefaults = (options = {}) => {
       uniqueName: `webpackJsonp${appPackageJson.name}`,
       // this defaults to 'window', but by setting it to 'this' then
       // module chunks which are built will work in web workers as well.
-      globalObject: 'this',
+      // globalObject: 'this',
+      ...userOutput,
     };
   });
 
