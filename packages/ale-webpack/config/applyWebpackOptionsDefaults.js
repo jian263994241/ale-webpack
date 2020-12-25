@@ -201,6 +201,10 @@ const applyWebpackOptionsDefaults = (options = {}) => {
 
   D(options, 'bail', isEnvProduction);
 
+  D(options, 'infrastructureLogging', {
+    level: 'warn',
+  });
+
   D(
     options,
     'devtool',
