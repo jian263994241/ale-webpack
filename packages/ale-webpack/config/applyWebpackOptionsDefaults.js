@@ -36,8 +36,8 @@ const reactRefreshOverlayEntry = require.resolve(
 // style files regexes
 const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
-const sassRegex = /\.(scss|sass)$/;
-const sassModuleRegex = /\.module\.(scss|sass)$/;
+const lessegex = /\.less$/;
+const lessModuleRegex = /\.module\.less$/;
 
 /**
  * Sets a constant default value when undefined
@@ -521,14 +521,14 @@ const applyWebpackOptionsDefaults = (options = {}) => {
       // By default we support SASS Modules with the
       // extensions .module.scss or .module.sass
       {
-        test: sassRegex,
-        exclude: sassModuleRegex,
+        test: lessegex,
+        exclude: lessModuleRegex,
         use: getStyleLoaders(
           {
             importLoaders: 3,
             sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
           },
-          'sass-loader',
+          'less-loader',
         ),
         // Don't consider CSS imports dead code even if the
         // containing package claims to have no side effects.
@@ -539,7 +539,7 @@ const applyWebpackOptionsDefaults = (options = {}) => {
       // Adds support for CSS Modules, but using SASS
       // using the extension .module.scss or .module.sass
       {
-        test: sassModuleRegex,
+        test: lessModuleRegex,
         use: getStyleLoaders(
           {
             importLoaders: 3,
@@ -548,7 +548,7 @@ const applyWebpackOptionsDefaults = (options = {}) => {
               getLocalIdent: getCSSModuleLocalIdent,
             },
           },
-          'sass-loader',
+          'less-loader',
         ),
       },
       // "file" loader makes sure those assets get served by WebpackDevServer.
