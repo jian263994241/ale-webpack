@@ -337,6 +337,7 @@ const applyWebpackOptionsDefaults = (options = {}) => {
       'scheduler/tracing': 'scheduler/tracing-profiling',
     }),
     ...(modules.webpackAliases || {}),
+    ...appPackageJson.alias,
     ...alias,
   }));
   D(
