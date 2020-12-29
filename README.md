@@ -10,7 +10,14 @@ npm install ale-cli -D
 
 ```
 
-## 配置
+## 文档
 
-- [ale-webpack](./packages/ale-webpack/README.md)
+- [快速开始](./doc/快速开始.md)
+- [开发环境](./doc/开发环境.md)
+- [配置别名](./doc/Alias.md)
+- [配置插件](./doc/Plugin.md)
+- [设置代理](./doc/Proxy.md)
+- [自定义环境变量](./doc/自定义环境变量.md)
+- [配置git-commit校验](./doc/git-cz.md)
+
 

@@ -777,7 +777,7 @@ const applyWebpackOptionsDefaults = (options = {}) => {
                   source: options.output.path,
                   destination: path.join(
                     options.output.path,
-                    appPackageJson.name + '@' + appPackageJson.version + '.zip',
+                    appPackageJson.name + '_' + appPackageJson.version + '.zip',
                   ),
                 },
               ],
