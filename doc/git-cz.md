@@ -4,9 +4,8 @@
 ## 安装
 
 ```
-npm install -g git-cz
 
-npm install -D @commitlint/cli @commitlint/config-conventional cz-conventional-changelog husky prettier pretty-quick
+npm install -D @commitlint/cli @commitlint/config-conventional commitizen cz-conventional-changelog husky prettier pretty-quick
 ```
 
 ## 配置
@@ -25,7 +24,7 @@ package.json 添加字段
 ```json
 {
   "scripts": {
-    "commit": "git-cz"
+    "commit": "cz"
   },
   "husky": {
     "hooks": {
