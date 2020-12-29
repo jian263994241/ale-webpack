@@ -1,11 +1,11 @@
 # ale-webpack
 
-为了更容易的使用webpack, ale-webpack在webpack的基础上增加了一些默认配置和快捷配置ale, 配置的对象格式和webpack保持一致.
+ale-webpack 是一个基于webpack的打包方案, 默认配置方案参考create-react-app, 同时兼容webpack.config.js扩展和零配置两种方案.
 
 ## 安装
 
 ```
-## 安装命令
+
 npm install ale-cli -D
 
 ```
