@@ -3,11 +3,17 @@
 const path = require('path');
 const fs = require('fs');
 const getPublicUrlOrPath = require('react-dev-utils/getPublicUrlOrPath');
+const { setTextRange } = require('typescript');
 
 // Make sure any symlinks in the project folder are resolved:
 // https://github.com/facebook/create-react-app/issues/637
 const appDirectory = fs.realpathSync(process.cwd());
 const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath);
+
+const resolveDefaultPath = (pathTarget, defaultPath) =>
+  fs.existsSync(pathTarget) ? pathTarget : defaultPath;
+
+const appPackageJson = resolveApp('package.json');
 
 // We use `PUBLIC_URL` environment variable or "homepage" field to infer
 // "public path" at which the app is served.
@@ -17,7 +23,7 @@ const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath);
 // like /todos/42/static/js/bundle.7289d.js. We have to know the root.
 const publicUrlOrPath = getPublicUrlOrPath(
   process.env.NODE_ENV === 'development',
-  require(resolveApp('package.json')).homepage,
+  require(appPackageJson).homepage,
   process.env.PUBLIC_URL,
 );
 
@@ -54,10 +60,16 @@ module.exports = {
   appPath: resolveApp('.'),
   appBuild: resolveApp('build'),
   appPublic: resolveApp('public'),
-  appHtml: resolveApp('public/index.html'),
-  appIndexJs: resolveModule(resolveApp, 'src/index'),
-  appPackageJson: resolveApp('package.json'),
-  appSrc: resolveApp('src'),
+  appHtml: resolveDefaultPath(
+    resolveApp('public/index.html'),
+    path.join(__dirname, '../templates/index.html'),
+  ),
+  appIndexJs: resolveDefaultPath(
+    resolveModule(resolveApp, 'src/index'),
+    resolveApp(require(appPackageJson).main),
+  ),
+  appPackageJson,
+  appSrc: resolveDefaultPath(resolveApp('src'), resolveApp('.')),
   appTsConfig: resolveApp('tsconfig.json'),
   appJsConfig: resolveApp('jsconfig.json'),
   yarnLockFile: resolveApp('yarn.lock'),
@@ -70,3 +82,4 @@ module.exports = {
 };
 
 module.exports.moduleFileExtensions = moduleFileExtensions;
+module.exports.resolveApp = resolveApp;

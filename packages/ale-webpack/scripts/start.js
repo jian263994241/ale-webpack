@@ -42,7 +42,7 @@ async function start(options = {}) {
   const isInteractive = process.stdout.isTTY;
 
   // Warn and crash if required files are missing
-  if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs].filter(Boolean))) {
+  if (!checkRequiredFiles([paths.appIndexJs].filter(Boolean))) {
     process.exit(1);
   }
 

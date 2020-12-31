@@ -215,11 +215,35 @@ const applyWebpackOptionsDefaults = (options = {}) => {
       : isEnvDevelopment && 'cheap-module-source-map',
   );
 
-  F(options, 'entry', () => {
+  /**
+   * Prepend webpackHotDevClient files to entry
+   * @param {*} entry opitions.entry
+   */
+  const prependEntry = (entry) => {
+    const entries = [webpackDevClientEntry];
+
+    if (typeof entry === 'function') {
+      return () => Promise.resolve(entry()).then(prependEntry);
+    }
+
+    if (typeof entry === 'object' && !Array.isArray(entry)) {
+      const clone = {};
+
+      Object.keys(entry).forEach((key) => {
+        clone[key] = entries.concat(entry[key]);
+      });
+      return clone;
+    }
+    return entries.concat(entry);
+  };
+
+  FF(options, 'entry', (entry) => {
+    entry = entry ? entry : paths.appIndexJs;
+
     //ignore user entry
     return isEnvDevelopment && !shouldUseReactRefresh
-      ? [webpackDevClientEntry, paths.appIndexJs]
-      : paths.appIndexJs;
+      ? prependEntry(entry)
+      : entry;
   });
 
   FF(options, 'output', (userOutput) => {
