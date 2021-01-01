@@ -2,7 +2,7 @@
   "name": "simple",
   "version": "1.0.0",
   "description": "",
-  "main": "./index.jsx",
+  "main": "./index",
   "scripts": {
     "dev": "../../ale-cli/bin/ale start",
     "build": "../../ale-cli/bin/ale build"

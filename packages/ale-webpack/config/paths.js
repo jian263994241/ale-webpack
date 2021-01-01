@@ -64,9 +64,9 @@ module.exports = {
     resolveApp('public/index.html'),
     path.join(__dirname, '../templates/index.html'),
   ),
-  appIndexJs: resolveDefaultPath(
-    resolveModule(resolveApp, 'src/index'),
-    resolveApp(require(appPackageJson).main),
+  appIndexJs: resolveModule(
+    resolveApp,
+    require(appPackageJson).main || 'src/index',
   ),
   appPackageJson,
   appSrc: resolveDefaultPath(resolveApp('src'), resolveApp('.')),

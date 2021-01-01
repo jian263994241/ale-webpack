@@ -37,6 +37,12 @@ async function start(options = {}) {
   // Ensure environment variables are read.
   await readEnvFiles({ ...envOptions, verbose });
 
+  let webpackConfigOverrides = {};
+
+  if (fs.existsSync(paths.webpackConfig)) {
+    webpackConfigOverrides = require(paths.webpackConfig);
+  }
+
   const env = getClientEnvironment(paths.publicUrlOrPath.slice(0, -1));
   const useYarn = fs.existsSync(paths.yarnLockFile);
   const isInteractive = process.stdout.isTTY;
@@ -46,9 +52,13 @@ async function start(options = {}) {
     process.exit(1);
   }
 
+  const overridesDevServer = webpackConfigOverrides.devServer || {};
+
   // Tools like Cloud9 rely on this.
-  const DEFAULT_PORT = parseInt(process.env.PORT, 10) || 3000;
-  const HOST = process.env.HOST || '0.0.0.0';
+  const DEFAULT_PORT =
+    overridesDevServer.post || parseInt(process.env.PORT, 10) || 3000;
+
+  const HOST = overridesDevServer.host || process.env.HOST || '0.0.0.0';
 
   if (process.env.HOST) {
     console.log(
@@ -80,12 +90,6 @@ async function start(options = {}) {
       if (port == null) {
         // We have not found a port.
         return;
-      }
-
-      let webpackConfigOverrides;
-
-      if (fs.existsSync(paths.webpackConfig)) {
-        webpackConfigOverrides = require(paths.webpackConfig);
       }
 
       const config = configFactory(webpackConfigOverrides);
@@ -135,6 +139,7 @@ async function start(options = {}) {
       const devServer = new WebpackDevServer(compiler, {
         ...serverConfig,
         ...config.devServer,
+        ...{ port },
       });
 
       // Launch WebpackDevServer.

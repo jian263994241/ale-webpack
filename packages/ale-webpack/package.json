@@ -1,6 +1,6 @@
 {
   "name": "ale-webpack",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Packs modules for browser",
   "main": "index.js",
   "scripts": {},

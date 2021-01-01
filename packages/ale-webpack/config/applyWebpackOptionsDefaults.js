@@ -39,6 +39,8 @@ const cssModuleRegex = /\.module\.css$/;
 const lessegex = /\.less$/;
 const lessModuleRegex = /\.module\.less$/;
 
+const NODE_MODULES_REGEXP = /[\\/]node_modules[\\/]/i;
+
 /**
  * Sets a constant default value when undefined
  * @template T
@@ -384,6 +386,7 @@ const applyWebpackOptionsDefaults = (options = {}) => {
       // Adds support for installing with Plug'n'Play, leading to faster installs and adding
       // guards against forgotten dependencies and such.
       PnpWebpackPlugin,
+
       ...userResolvePlugins,
     ];
   });
@@ -440,7 +443,8 @@ const applyWebpackOptionsDefaults = (options = {}) => {
       // The preset includes JSX, Flow, TypeScript, and some ESnext features.
       {
         test: /\.(js|mjs|jsx|ts|tsx)$/,
-        include: paths.appSrc,
+        // include: paths.appSrc,
+        exclude: NODE_MODULES_REGEXP,
         use: {
           loader: require.resolve('babel-loader'),
           options: {
